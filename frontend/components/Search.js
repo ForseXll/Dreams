@@ -40,14 +40,12 @@ class AutoComplete extends React.Component
     //debounce so you don't overload server with request. 
     onChange = debounce(async (event, client) =>
     {
-        console.log("searching");
         this.setState({ loading: true });
         //manually query apollo client
         const response = await client.query({
             query: SEARCH_ITEM_QUERY,
             variables: { searchTerm: event.target.value }
         });
-        console.log(response);
         this.setState({
             items: response.data.items,
             loading: false,

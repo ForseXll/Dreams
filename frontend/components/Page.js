@@ -26,12 +26,6 @@ const Inner = styled.div`
 `;
 
 injectGlobal`
-    @font-face {
-    font-family: 'Serif';
-    src: url('/') ;
-    font-weight: normal;
-    font-style: normal;
-  }
   html {
     box-sizing: border-box;
     font-size: 10px;

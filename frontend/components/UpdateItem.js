@@ -135,4 +135,3 @@ class UpdateItem extends Component
 }
 
 export default UpdateItem;
-export { UPDATE_ITEM };

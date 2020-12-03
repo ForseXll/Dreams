@@ -56,7 +56,6 @@ class CreateItem extends Component
         });
 
         const file = await res.json();
-        // console.log(file);
         this.setState({
             image: file.secure_url,
             largeImage: file.eager[0].secure_url,
@@ -80,7 +79,6 @@ class CreateItem extends Component
                             pathname: '/item',
                             query: { id: response.data.createItem.id }
                         })
-                        // console.log(response);
                     }}>
                         <Error error={error} />
                         <fieldset data-test="form" disabled={loading} aria-busy={loading}>
@@ -145,4 +143,3 @@ class CreateItem extends Component
 }
 
 export default CreateItem;
-export { CREATE_ITEM_MUTATION };

@@ -46,17 +46,18 @@ export default class Items extends Component
                         skip: this.props.page * perPage - perPage,
                     }}
                 >
-                    {({ data, error, loading }) =>
+                    {({ data, error, loading, refetch }) =>
                     {
                         if (loading) return <p> Loading...</p>
                         if (error) return <p> Error: {error.message}</p>
+                        refetch();
                         return <ItemList>
                             {data.items.map(item => <Item item={item} key={item.id} />)}
                         </ItemList>
                     }}
                 </Query>
                 <Pagination page={this.props.page} />
-            </Center>
+            </Center >
         )
     }
 }

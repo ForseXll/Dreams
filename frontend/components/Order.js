@@ -46,8 +46,6 @@ class Orders extends React.Component
                 {
                     if (error) return <Error error={error} />
                     if (loading) return <p>Loading....</p>
-
-                    console.log(data);
                     return (
                         <OrderStyles>
                             <Head>

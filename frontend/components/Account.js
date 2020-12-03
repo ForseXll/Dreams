@@ -30,7 +30,6 @@ const Account = props => (
         {
             if (error) return <Error error={error} />
             if (loading) return <p>loading..</p>
-            console.log(data.me);
             if (data.me)
             {
                 return (
@@ -39,12 +38,10 @@ const Account = props => (
                             <h1>Account Info</h1>
                         </div>
                         <h3>Hello {data.me.name}!</h3>
-                        {console.log(data.me.permissions)}
                         <button onClick={() =>
                         {
                             if (data.me.permissions.includes("ADMIN", "PERMISSIONUPDATE"))
                             {
-                                console.log("made it in")
                                 Router.push({
                                     pathname: '/permissions',
                                     query: {
