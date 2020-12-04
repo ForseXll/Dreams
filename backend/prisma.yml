@@ -1,5 +1,6 @@
-#endpoint: ${env:PRISMA_ENDPOINT}
-endpoint: https://dreams-server-f24334efa4.herokuapp.com/dreams/production
+# endpoint: ${env:PRISMA_ENDPOINT_DEV}
+# endpoint: https://dreams-server-f24334efa4.herokuapp.com/dreams/production
+endpoint: ${env:PRISMA_ENDPOINT}
 datamodel: datamodel.graphql
 secret: ${env:PRISMA_SECRET}
 hooks:
