@@ -7,7 +7,7 @@ function createClient({ headers })
 {
   return new ApolloClient({
     //TODO: this when pushing
-    uri: process.env.NODE_ENV === 'development' ? endpoint : endpoint,
+    uri: process.env.NODE_ENV === 'development' ? endpoint : prodEndpoint,
     request: operation =>
     {
       operation.setContext({
