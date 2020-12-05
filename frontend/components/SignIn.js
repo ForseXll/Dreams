@@ -20,8 +20,8 @@ const SIGNIN_MUTATION = gql`
 class SignIn extends Component
 {
     state = {
-        name: '',
         email: '',
+        name: '',
         password: '',
     };
     SaveToState = (event) =>
@@ -36,17 +36,19 @@ class SignIn extends Component
                 variables={this.state}
                 refetchQueries={[{ query: CURRENT_USER_QUERY }]}
             >
-                {(signUp, { error, loading }) =>
+                {(signIn, { error, loading }) =>
                 {
                     return (<Form method="post" onSubmit={async event =>
                     {
                         event.preventDefault();
-                        await signUp();
+                        await signIn();
                         this.setState({
                             name: '',
                             email: '',
                             password: '',
                         });
+                        console.log(signIn.id);
+                        console.log("singin!")
                         Router.push({
                             pathname: '/',
                             query: {
