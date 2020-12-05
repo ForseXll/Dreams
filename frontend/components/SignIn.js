@@ -47,12 +47,12 @@ class SignIn extends Component
                             email: '',
                             password: '',
                         });
-                        // Router.push({
-                        //     pathname: '/',
-                        //     query: {
-                        //         id: signIn.id,
-                        //     },
-                        // });
+                        Router.push({
+                            pathname: '/',
+                            query: {
+                                id: signIn.id,
+                            },
+                        });
                     }}>
                         <fieldset disabled={loading} aria-busy={loading}>
                             <h2> Sign In to your Account</h2>
