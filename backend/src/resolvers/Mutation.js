@@ -139,7 +139,10 @@ const Mutations = {
     },
     signOut(parent, args, ctx, info)
     {
-        ctx.response.clearCookie('token');
+        ctx.response.clearCookie('token', {
+            sameSite: 'none',
+            secure: true,
+        });
         return { message: "later" }
     },
     async requestReset(parent, args, ctx, info)
@@ -212,6 +215,8 @@ const Mutations = {
         ctx.response.cookie('token', token, {
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year cookie
+            sameSite: 'none',
+            secure: true,
         });
         //8. return user
         return user;
