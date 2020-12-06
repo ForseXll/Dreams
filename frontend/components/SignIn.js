@@ -20,8 +20,8 @@ const SIGNIN_MUTATION = gql`
 class SignIn extends Component
 {
     state = {
-        email: '',
         name: '',
+        email: '',
         password: '',
     };
     SaveToState = (event) =>
@@ -47,8 +47,6 @@ class SignIn extends Component
                             email: '',
                             password: '',
                         });
-                        console.log(signIn);
-                        console.log("singin!")
                         Router.push({
                             pathname: '/',
                             query: {
