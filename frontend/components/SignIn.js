@@ -47,7 +47,7 @@ class SignIn extends Component
                             email: '',
                             password: '',
                         });
-                        console.log(signIn.id);
+                        console.log(signIn);
                         console.log("singin!")
                         Router.push({
                             pathname: '/',

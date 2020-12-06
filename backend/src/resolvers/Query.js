@@ -5,15 +5,6 @@ const Query = {
     items: forwardTo('db'),
     item: forwardTo('db'),
     itemsConnection: forwardTo('db'),
-    // item: forwardTo('db'),
-    // items(parent, args, ctx, info)
-    // {
-    //     return ctx.db.query.items();
-    // },
-    // item(parent, args, ctx, info)
-    // {
-    //     return ctx.db.query.item(args);
-    // }
     //check for user account
     me(parent, args, ctx, info)
     {

@@ -128,8 +128,10 @@ const Mutations = {
         ctx.response.cookie('token', token, {
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year cookie
+            sameSite: 'none',
         });
         //5. return user
+        console.log(user);
         return user;
     },
     signOut(parent, args, ctx, info)
