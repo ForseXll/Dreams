@@ -1,3 +1,9 @@
+TODO:
+[ ] Update postman sync to not change structure.
+[ ] Refactor fron end from current to modern react.
+[ ] Remove some of the installed dependencies on backend.
+[ ] Remove some of the installed dependencies on frontend.
+
 # Dreams
 Advanced React Course Practice
 
