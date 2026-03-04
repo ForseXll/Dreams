@@ -21,7 +21,47 @@ const updateItemSchema = z.object({
 });
 
 export async function itemRoutes(fastify) {
-  fastify.get('/items', async (request, reply) => {
+  fastify.get('/items', {
+    schema: {
+      tags: ['Items'],
+      summary: 'List items',
+      querystring: {
+        type: 'object',
+        properties: {
+          skip: { type: 'integer', default: 0 },
+          take: { type: 'integer', default: 10 },
+          search: { type: 'string' },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            items: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'integer' },
+                  title: { type: 'string' },
+                  description: { type: 'string' },
+                  image: { type: 'string' },
+                  largeImage: { type: 'string' },
+                  price: { type: 'integer' },
+                  userId: { type: 'integer' },
+                  createdAt: { type: 'string', format: 'date-time' },
+                  updatedAt: { type: 'string', format: 'date-time' },
+                },
+              },
+            },
+            total: { type: 'integer' },
+            skip: { type: 'integer' },
+            take: { type: 'integer' },
+          },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const skip = parseInt(request.query?.skip) || 0;
     const take = parseInt(request.query?.take) || 10;
     const search = request.query?.search;
@@ -47,7 +87,47 @@ export async function itemRoutes(fastify) {
     };
   });
 
-  fastify.get('/items/:id', async (request, reply) => {
+  fastify.get('/items/:id', {
+    schema: {
+      tags: ['Items'],
+      summary: 'Get item by ID',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: { type: 'string' },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer' },
+            title: { type: 'string' },
+            description: { type: 'string' },
+            image: { type: 'string' },
+            largeImage: { type: 'string' },
+            price: { type: 'integer' },
+            userId: { type: 'integer' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' },
+          },
+        },
+        400: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+        404: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const id = parseInt(request.params.id);
 
     if (isNaN(id)) {
@@ -65,7 +145,41 @@ export async function itemRoutes(fastify) {
     return item;
   });
 
-  fastify.post('/items', { preHandler: authMiddleware }, async (request, reply) => {
+  fastify.post('/items', {
+    schema: {
+      tags: ['Items'],
+      summary: 'Create a new item',
+      security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object',
+        required: ['title', 'description', 'price'],
+        properties: {
+          title: { type: 'string', minLength: 1 },
+          description: { type: 'string' },
+          image: { type: 'string' },
+          largeImage: { type: 'string' },
+          price: { type: 'integer', minimum: 1 },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer' },
+            title: { type: 'string' },
+            description: { type: 'string' },
+            image: { type: 'string' },
+            largeImage: { type: 'string' },
+            price: { type: 'integer' },
+            userId: { type: 'integer' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' },
+          },
+        },
+      },
+    },
+    preHandler: authMiddleware,
+  }, async (request, reply) => {
     const data = createItemSchema.parse(request.body);
 
     const [item] = await db
@@ -83,7 +197,65 @@ export async function itemRoutes(fastify) {
     return item;
   });
 
-  fastify.put('/items/:id', { preHandler: authMiddleware }, async (request, reply) => {
+  fastify.put('/items/:id', {
+    schema: {
+      tags: ['Items'],
+      summary: 'Update an item',
+      security: [{ bearerAuth: [] }],
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: { type: 'string' },
+        },
+      },
+      body: {
+        type: 'object',
+        properties: {
+          title: { type: 'string', minLength: 1 },
+          description: { type: 'string' },
+          image: { type: 'string' },
+          largeImage: { type: 'string' },
+          price: { type: 'integer', minimum: 1 },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer' },
+            title: { type: 'string' },
+            description: { type: 'string' },
+            image: { type: 'string' },
+            largeImage: { type: 'string' },
+            price: { type: 'integer' },
+            userId: { type: 'integer' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' },
+          },
+        },
+        400: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+        403: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+        404: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+      },
+    },
+    preHandler: authMiddleware,
+  }, async (request, reply) => {
     const id = parseInt(request.params.id);
 
     if (isNaN(id)) {
@@ -113,7 +285,47 @@ export async function itemRoutes(fastify) {
     return item;
   });
 
-  fastify.delete('/items/:id', { preHandler: authMiddleware }, async (request, reply) => {
+  fastify.delete('/items/:id', {
+    schema: {
+      tags: ['Items'],
+      summary: 'Delete an item',
+      security: [{ bearerAuth: [] }],
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: { type: 'string' },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+          },
+        },
+        400: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+        403: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+        404: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+      },
+    },
+    preHandler: authMiddleware,
+  }, async (request, reply) => {
     const id = parseInt(request.params.id);
 
     if (isNaN(id)) {

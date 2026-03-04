@@ -10,7 +10,45 @@ const addToCartSchema = z.object({
 });
 
 export async function cartRoutes(fastify) {
-  fastify.get('/cart', { preHandler: authMiddleware }, async (request, reply) => {
+  fastify.get('/cart', {
+    schema: {
+      tags: ['Cart'],
+      summary: 'Get user cart',
+      security: [{ bearerAuth: [] }],
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            cartItems: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'integer' },
+                  userId: { type: 'integer' },
+                  itemId: { type: 'integer' },
+                  quantity: { type: 'integer' },
+                  item: {
+                    type: 'object',
+                    properties: {
+                      id: { type: 'integer' },
+                      title: { type: 'string' },
+                      description: { type: 'string' },
+                      image: { type: 'string' },
+                      price: { type: 'integer' },
+                    },
+                  },
+                },
+              },
+            },
+            total: { type: 'integer' },
+            itemCount: { type: 'integer' },
+          },
+        },
+      },
+    },
+    preHandler: authMiddleware,
+  }, async (request, reply) => {
     const cart = await db.query.cartItems.findMany({
       where: eq(cartItems.userId, request.user.userId),
       with: {
@@ -27,7 +65,39 @@ export async function cartRoutes(fastify) {
     };
   });
 
-  fastify.post('/cart', { preHandler: authMiddleware }, async (request, reply) => {
+  fastify.post('/cart', {
+    schema: {
+      tags: ['Cart'],
+      summary: 'Add item to cart',
+      security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object',
+        required: ['itemId'],
+        properties: {
+          itemId: { type: 'integer', minimum: 1 },
+          quantity: { type: 'integer', minimum: 1, default: 1 },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer' },
+            userId: { type: 'integer' },
+            itemId: { type: 'integer' },
+            quantity: { type: 'integer' },
+          },
+        },
+        404: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+      },
+    },
+    preHandler: authMiddleware,
+  }, async (request, reply) => {
     const data = addToCartSchema.parse(request.body);
 
     const item = await db.query.items.findFirst({
@@ -67,7 +137,51 @@ export async function cartRoutes(fastify) {
     return cartItem;
   });
 
-  fastify.put('/cart/:id', { preHandler: authMiddleware }, async (request, reply) => {
+  fastify.put('/cart/:id', {
+    schema: {
+      tags: ['Cart'],
+      summary: 'Update cart item quantity',
+      security: [{ bearerAuth: [] }],
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: { type: 'string' },
+        },
+      },
+      body: {
+        type: 'object',
+        required: ['quantity'],
+        properties: {
+          quantity: { type: 'integer', minimum: 1 },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer' },
+            userId: { type: 'integer' },
+            itemId: { type: 'integer' },
+            quantity: { type: 'integer' },
+          },
+        },
+        400: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+        404: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+      },
+    },
+    preHandler: authMiddleware,
+  }, async (request, reply) => {
     const id = parseInt(request.params.id);
     const quantity = parseInt(request.body?.quantity);
 
@@ -95,7 +209,41 @@ export async function cartRoutes(fastify) {
     return updated;
   });
 
-  fastify.delete('/cart/:id', { preHandler: authMiddleware }, async (request, reply) => {
+  fastify.delete('/cart/:id', {
+    schema: {
+      tags: ['Cart'],
+      summary: 'Remove item from cart',
+      security: [{ bearerAuth: [] }],
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: { type: 'string' },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+          },
+        },
+        400: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+        404: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+      },
+    },
+    preHandler: authMiddleware,
+  }, async (request, reply) => {
     const id = parseInt(request.params.id);
 
     if (isNaN(id)) {
@@ -118,7 +266,22 @@ export async function cartRoutes(fastify) {
     return { message: 'Item removed from cart' };
   });
 
-  fastify.delete('/cart', { preHandler: authMiddleware }, async (request, reply) => {
+  fastify.delete('/cart', {
+    schema: {
+      tags: ['Cart'],
+      summary: 'Clear cart',
+      security: [{ bearerAuth: [] }],
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+          },
+        },
+      },
+    },
+    preHandler: authMiddleware,
+  }, async (request, reply) => {
     await db.delete(cartItems).where(eq(cartItems.userId, request.user.userId));
 
     return { message: 'Cart cleared' };

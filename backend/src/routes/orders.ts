@@ -14,7 +14,47 @@ const createOrderSchema = z.object({
 });
 
 export async function orderRoutes(fastify) {
-  fastify.get('/orders', { preHandler: authMiddleware }, async (request, reply) => {
+  fastify.get('/orders', {
+    schema: {
+      tags: ['Orders'],
+      summary: 'Get user orders',
+      security: [{ bearerAuth: [] }],
+      response: {
+        200: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'integer' },
+              total: { type: 'integer' },
+              charge: { type: 'string' },
+              userId: { type: 'integer' },
+              createdAt: { type: 'string', format: 'date-time' },
+              updatedAt: { type: 'string', format: 'date-time' },
+              orderItems: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'integer' },
+                    title: { type: 'string' },
+                    description: { type: 'string' },
+                    image: { type: 'string' },
+                    largeImage: { type: 'string' },
+                    price: { type: 'integer' },
+                    quantity: { type: 'integer' },
+                    orderId: { type: 'integer' },
+                    userId: { type: 'integer' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    preHandler: authMiddleware,
+  }, async (request, reply) => {
     const userOrders = await db.query.orders.findMany({
       where: eq(orders.userId, request.user.userId),
       with: {
@@ -26,7 +66,63 @@ export async function orderRoutes(fastify) {
     return userOrders;
   });
 
-  fastify.get('/orders/:id', { preHandler: authMiddleware }, async (request, reply) => {
+  fastify.get('/orders/:id', {
+    schema: {
+      tags: ['Orders'],
+      summary: 'Get order by ID',
+      security: [{ bearerAuth: [] }],
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: { type: 'string' },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer' },
+            total: { type: 'integer' },
+            charge: { type: 'string' },
+            userId: { type: 'integer' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' },
+            orderItems: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'integer' },
+                  title: { type: 'string' },
+                  description: { type: 'string' },
+                  image: { type: 'string' },
+                  largeImage: { type: 'string' },
+                  price: { type: 'integer' },
+                  quantity: { type: 'integer' },
+                  orderId: { type: 'integer' },
+                  userId: { type: 'integer' },
+                },
+              },
+            },
+          },
+        },
+        400: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+        404: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+      },
+    },
+    preHandler: authMiddleware,
+  }, async (request, reply) => {
     const id = parseInt(request.params.id);
 
     if (isNaN(id)) {
@@ -47,7 +143,43 @@ export async function orderRoutes(fastify) {
     return order;
   });
 
-  fastify.post('/orders', { preHandler: authMiddleware }, async (request, reply) => {
+  fastify.post('/orders', {
+    schema: {
+      tags: ['Orders'],
+      summary: 'Create order (legacy)',
+      security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object',
+        required: ['stripeToken'],
+        properties: {
+          stripeToken: { type: 'string' },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer' },
+            total: { type: 'integer' },
+            charge: { type: 'string' },
+            userId: { type: 'integer' },
+            createdAt: { type: 'string', format: 'date-time' },
+            orderItems: {
+              type: 'array',
+              items: { type: 'object' },
+            },
+          },
+        },
+        400: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+      },
+    },
+    preHandler: authMiddleware,
+  }, async (request, reply) => {
     const data = createOrderSchema.parse(request.body);
 
     const userCart = await db.query.cartItems.findMany({
@@ -110,7 +242,29 @@ export async function orderRoutes(fastify) {
     }
   });
 
-  fastify.post('/orders/create-checkout-session', { preHandler: authMiddleware }, async (request, reply) => {
+  fastify.post('/orders/create-checkout-session', {
+    schema: {
+      tags: ['Orders'],
+      summary: 'Create Stripe checkout session',
+      security: [{ bearerAuth: [] }],
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            sessionId: { type: 'string' },
+            url: { type: 'string' },
+          },
+        },
+        400: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+      },
+    },
+    preHandler: authMiddleware,
+  }, async (request, reply) => {
     const userCart = await db.query.cartItems.findMany({
       where: eq(cartItems.userId, request.user.userId),
       with: {

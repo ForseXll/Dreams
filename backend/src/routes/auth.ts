@@ -4,6 +4,7 @@ import { users, userPermissions, permissions } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import { hashPassword, verifyPassword, signToken, generateResetToken } from '../lib/jwt';
 import nodemailer from 'nodemailer';
+import { logger } from '../logger/logger-provider';
 
 const registerSchema = z.object({
   name: z.string().min(1),
@@ -58,7 +59,43 @@ async function assignPermission(userId: number, permissionName: string) {
 }
 
 export async function authRoutes(fastify) {
-  fastify.post('/register', async (request, reply) => {
+  fastify.post('/register', {
+    schema: {
+      tags: ['Auth'],
+      summary: 'Register a new user',
+      body: {
+        type: 'object',
+        required: ['name', 'email', 'password'],
+        properties: {
+          name: { type: 'string', minLength: 1 },
+          email: { type: 'string', format: 'email' },
+          password: { type: 'string', minLength: 6 },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            user: {
+              type: 'object',
+              properties: {
+                id: { type: 'integer' },
+                name: { type: 'string' },
+                email: { type: 'string' },
+              },
+            },
+            token: { type: 'string' },
+          },
+        },
+        400: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const data = registerSchema.parse(request.body);
 
     const existingUser = await db.query.users.findFirst({
@@ -88,7 +125,42 @@ export async function authRoutes(fastify) {
     return { user: { id: user.id, name: user.name, email: user.email }, token };
   });
 
-  fastify.post('/login', async (request, reply) => {
+  fastify.post('/login', {
+    schema: {
+      tags: ['Auth'],
+      summary: 'Login user',
+      body: {
+        type: 'object',
+        required: ['email', 'password'],
+        properties: {
+          email: { type: 'string', format: 'email' },
+          password: { type: 'string' },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            user: {
+              type: 'object',
+              properties: {
+                id: { type: 'integer' },
+                name: { type: 'string' },
+                email: { type: 'string' },
+              },
+            },
+            token: { type: 'string' },
+          },
+        },
+        401: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const data = loginSchema.parse(request.body);
 
     const user = await db.query.users.findFirst({
@@ -110,7 +182,27 @@ export async function authRoutes(fastify) {
     return { user: { id: user.id, name: user.name, email: user.email }, token };
   });
 
-  fastify.post('/request-reset', async (request, reply) => {
+  fastify.post('/request-reset', {
+    schema: {
+      tags: ['Auth'],
+      summary: 'Request password reset',
+      body: {
+        type: 'object',
+        required: ['email'],
+        properties: {
+          email: { type: 'string', format: 'email' },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+          },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const data = requestResetSchema.parse(request.body);
 
     const user = await db.query.users.findFirst({
@@ -139,13 +231,41 @@ export async function authRoutes(fastify) {
         html: `<p>Click <a href="${resetUrl}">here</a> to reset your password.</p>`,
       });
     } catch (error) {
-      console.error('Email send error:', error);
+      const authLogger = logger.provider.child('auth');
+      authLogger.error({ err: error, email: user.email }, 'Failed to send password reset email');
     }
 
     return { message: 'If email exists, reset link will be sent' };
   });
 
-  fastify.post('/reset-password', async (request, reply) => {
+  fastify.post('/reset-password', {
+    schema: {
+      tags: ['Auth'],
+      summary: 'Reset password with token',
+      body: {
+        type: 'object',
+        required: ['token', 'password'],
+        properties: {
+          token: { type: 'string' },
+          password: { type: 'string', minLength: 6 },
+        },
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+          },
+        },
+        400: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const data = resetPasswordSchema.parse(request.body);
 
     const user = await db.query.users.findFirst({
@@ -166,7 +286,30 @@ export async function authRoutes(fastify) {
     return { message: 'Password reset successful' };
   });
 
-  fastify.get('/me', async (request, reply) => {
+  fastify.get('/me', {
+    schema: {
+      tags: ['Auth'],
+      summary: 'Get current user',
+      security: [{ bearerAuth: [] }],
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer' },
+            name: { type: 'string' },
+            email: { type: 'string' },
+            permissions: { type: 'array', items: { type: 'string' } },
+          },
+        },
+        401: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' },
+          },
+        },
+      },
+    },
+  }, async (request, reply) => {
     const authHeader = request.headers.authorization;
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
