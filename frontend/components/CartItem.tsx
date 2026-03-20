@@ -1,9 +1,10 @@
 import formatMoney from '../lib/formatMoney';
+import type { CartItem as CartItemType } from '../lib/api/types';
 import styled from 'styled-components';
 import RemoveFromCart from './RemovefromCart';
 
 interface CartItemProps {
-  cartItem: any;
+  cartItem: CartItemType;
 }
 
 const CartItemStyle = styled.li`

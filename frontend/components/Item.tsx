@@ -4,10 +4,11 @@ import DeleteItem from './DeleteItem';
 import ItemStyles from './styles/ItemStyles';
 import PriceTag from './styles/PriceTag';
 import Title from './styles/Title';
+import type { Item as ItemType } from '../lib/api/types';
 import formatMoney from '../lib/formatMoney';
 
 interface ItemProps {
-  item: any;
+  item: ItemType;
 }
 
 export default function Item({ item }: ItemProps) {

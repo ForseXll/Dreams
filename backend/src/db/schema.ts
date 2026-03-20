@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import { serial, varchar, text, integer, timestamp, pgSchema } from 'drizzle-orm/pg-core';
 
 const main = pgSchema('main');
@@ -79,3 +80,64 @@ export const orderItems = main.table('order_items', {
     .references(() => orders.id, { onDelete: 'cascade' }),
   createdAt: timestamp('created_at').defaultNow(),
 });
+
+export const usersRelations = relations(users, ({ many }) => ({
+  cartItems: many(cartItems),
+  items: many(items),
+  orders: many(orders),
+  orderItems: many(orderItems),
+  userPermissions: many(userPermissions),
+}));
+
+export const permissionsRelations = relations(permissions, ({ many }) => ({
+  userPermissions: many(userPermissions),
+}));
+
+export const userPermissionsRelations = relations(userPermissions, ({ one }) => ({
+  permission: one(permissions, {
+    fields: [userPermissions.permissionId],
+    references: [permissions.id],
+  }),
+  user: one(users, {
+    fields: [userPermissions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const itemsRelations = relations(items, ({ many, one }) => ({
+  cartItems: many(cartItems),
+  user: one(users, {
+    fields: [items.userId],
+    references: [users.id],
+  }),
+}));
+
+export const ordersRelations = relations(orders, ({ many, one }) => ({
+  orderItems: many(orderItems),
+  user: one(users, {
+    fields: [orders.userId],
+    references: [users.id],
+  }),
+}));
+
+export const cartItemsRelations = relations(cartItems, ({ one }) => ({
+  item: one(items, {
+    fields: [cartItems.itemId],
+    references: [items.id],
+  }),
+  user: one(users, {
+    fields: [cartItems.userId],
+    references: [users.id],
+  }),
+}));
+
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderItems.orderId],
+    references: [orders.id],
+  }),
+  user: one(users, {
+    fields: [orderItems.userId],
+    references: [users.id],
+  }),
+}));

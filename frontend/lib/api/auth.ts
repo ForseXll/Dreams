@@ -1,5 +1,7 @@
 import type { paths } from './generated/openapi';
 import { apiClient } from './client';
+import { normalizeApiMessage, normalizeAuthResult, normalizeCurrentUser } from './normalize';
+import type { ApiMessage, AuthResult, CurrentUser } from './types';
 
 type RegisterUserInput =
   paths['/auth/register']['post']['requestBody']['content']['application/json'];
@@ -19,27 +21,29 @@ type CurrentUserResponse = paths['/auth/me']['get']['responses'][200]['content']
 type LogoutUserResponse = paths['/auth/logout']['post']['responses'][200]['content']['application/json'];
 
 export function registerUser(input: RegisterUserInput) {
-  return apiClient.post<RegisterUserResponse>('/auth/register', input);
+  return apiClient.post<RegisterUserResponse>('/auth/register', input).then((result) => normalizeAuthResult(result || undefined));
 }
 
 export function loginUser(input: LoginUserInput) {
-  return apiClient.post<LoginUserResponse>('/auth/login', input);
+  return apiClient.post<LoginUserResponse>('/auth/login', input).then((result) => normalizeAuthResult(result || undefined));
 }
 
 export function requestPasswordReset(input: RequestPasswordResetInput) {
-  return apiClient.post<RequestPasswordResetResponse>('/auth/request-reset', input);
+  return apiClient
+    .post<RequestPasswordResetResponse>('/auth/request-reset', input)
+    .then((result) => normalizeApiMessage(result));
 }
 
 export function resetPassword(input: ResetPasswordInput) {
-  return apiClient.post<ResetPasswordResponse>('/auth/reset-password', input);
+  return apiClient.post<ResetPasswordResponse>('/auth/reset-password', input).then((result) => normalizeApiMessage(result));
 }
 
 export function getCurrentUser() {
-  return apiClient.get<CurrentUserResponse>('/auth/me');
+  return apiClient.get<CurrentUserResponse>('/auth/me').then((result) => normalizeCurrentUser(result || undefined));
 }
 
 export function logoutUser() {
-  return apiClient.post<LogoutUserResponse>('/auth/logout');
+  return apiClient.post<LogoutUserResponse>('/auth/logout').then((result) => normalizeApiMessage(result));
 }
 
-export type { CurrentUserResponse, LoginUserInput, RegisterUserInput };
+export type { ApiMessage, AuthResult, CurrentUser, CurrentUserResponse, LoginUserInput, RegisterUserInput };

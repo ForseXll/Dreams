@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { perPage } from '../config';
+import type { Item as ItemType } from '../lib/api/types';
 import { listItems } from '../lib/api';
 import Item from './Item';
 import Pagination from './Pagination';
@@ -25,7 +26,7 @@ const ItemList = styled.div`
 
 export default function Items({ page }: ItemsProps) {
   const [error, setError] = useState<Error | null>(null);
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<ItemType[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
 
@@ -45,8 +46,8 @@ export default function Items({ page }: ItemsProps) {
           return;
         }
 
-        setItems(response.items || []);
-        setTotal(response.total || 0);
+        setItems(response.items);
+        setTotal(response.total);
       } catch (nextError) {
         if (active) {
           setError(nextError as Error);

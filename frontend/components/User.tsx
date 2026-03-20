@@ -1,11 +1,12 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import type { CartItem, CurrentUser } from '../lib/api/types';
 import { useAppState } from '../lib/appState';
 
 interface UserRenderProps {
   data: {
-    me: any;
+    me: (CurrentUser & { cart: CartItem[]; orders: [] }) | null;
   };
   loading: boolean;
 }

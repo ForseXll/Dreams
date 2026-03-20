@@ -1,9 +1,10 @@
 'use client';
 
-import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
 import ErrorMessage from './ErrorMessage';
 import OrderStyles from './styles/OrderStyles';
+import TimeText from './TimeText';
+import type { OrderItem, SingleOrder } from '../lib/api/types';
 import formatMoney from '../lib/formatMoney';
 import { getOrder } from '../lib/api';
 
@@ -14,7 +15,7 @@ interface OrderProps {
 export default function Order({ id }: OrderProps) {
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(true);
-  const [order, setOrder] = useState<any>(null);
+  const [order, setOrder] = useState<SingleOrder | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -67,7 +68,7 @@ export default function Order({ id }: OrderProps) {
       </p>
       <p>
         <span>Date</span>
-        <span>{format(new Date(order.createdAt), 'MMMM d, yyyy h:mm a')}</span>
+        <TimeText mode="absolute" value={order.createdAt} />
       </p>
       <p>
         <span>Total</span>
@@ -77,7 +78,7 @@ export default function Order({ id }: OrderProps) {
         <span>Item Count</span>
         <span>{order.orderItems.length}</span>
       </p>
-      {order.orderItems.map((item: any) => (
+      {order.orderItems.map((item: OrderItem) => (
         <div className="order-item" key={item.id}>
           <img src={item.image} alt={item.title} />
           <div className="item-details">

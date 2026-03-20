@@ -3,6 +3,7 @@ TODO:
 [ ] Refactor fron end from current to modern react.
 [ ] Remove some of the installed dependencies on backend.
 [ ] Remove some of the installed dependencies on frontend.
+[ ] Application has bug that exist on the UI. The port went good. Not its time to hunt them down.
 
 # Dreams
 Advanced React Course Practice

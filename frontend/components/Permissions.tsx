@@ -3,23 +3,22 @@
 import { useEffect, useState } from 'react';
 import ErrorMessage from './ErrorMessage';
 import Table from './styles/Table';
+import type { PermissionName, UserWithPermissions } from '../lib/api/types';
 import { listUsers, updateUserPermissions } from '../lib/api';
 
-const POSSIBLE_PERMISSIONS = [
+const POSSIBLE_PERMISSIONS: PermissionName[] = [
   'ADMIN',
   'USER',
   'ITEMCREATE',
   'ITEMUPDATE',
   'ITEMDELETE',
   'PERMISSIONUPDATE',
-] as const;
-
-type PermissionName = (typeof POSSIBLE_PERMISSIONS)[number];
+];
 
 export default function Permissions() {
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<UserWithPermissions[]>([]);
 
   useEffect(() => {
     let active = true;
@@ -31,7 +30,7 @@ export default function Permissions() {
         const response = await listUsers();
 
         if (active) {
-          setUsers(response || []);
+          setUsers(response);
         }
       } catch (nextError) {
         if (active) {
@@ -51,7 +50,7 @@ export default function Permissions() {
     };
   }, []);
 
-  const handleSaved = (updatedUser: any) => {
+  const handleSaved = (updatedUser: UserWithPermissions) => {
     setUsers((currentUsers) =>
       currentUsers.map((user) => (user.id === updatedUser.id ? updatedUser : user))
     );
@@ -88,10 +87,10 @@ export default function Permissions() {
   );
 }
 
-function UserPermissions({ onSaved, user }: { onSaved: (user: any) => void; user: any }) {
+function UserPermissions({ onSaved, user }: { onSaved: (user: UserWithPermissions) => void; user: UserWithPermissions }) {
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(false);
-  const [permissions, setPermissions] = useState<PermissionName[]>(user.permissions || []);
+  const [permissions, setPermissions] = useState<PermissionName[]>(user.permissions);
 
   const handlePermission = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = event.target;
@@ -111,7 +110,7 @@ function UserPermissions({ onSaved, user }: { onSaved: (user: any) => void; user
       setError(null);
       setLoading(true);
       const updatedUser = await updateUserPermissions(user.id, { permissions });
-      setPermissions((updatedUser?.permissions || []) as PermissionName[]);
+      setPermissions(updatedUser.permissions);
       onSaved(updatedUser);
     } catch (nextError) {
       setError(nextError as Error);

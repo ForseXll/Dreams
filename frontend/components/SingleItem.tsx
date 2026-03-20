@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import AddToCart from './AddToCart';
 import ErrorMessage from './ErrorMessage';
+import type { Item as ItemType } from '../lib/api/types';
 import formatMoney from '../lib/formatMoney';
 import { getItem } from '../lib/api';
 
@@ -44,7 +45,7 @@ const Item = styled.div`
 
 export default function SingleItem({ id }: SingleItemProps) {
   const [error, setError] = useState<Error | null>(null);
-  const [item, setItem] = useState<any>(null);
+  const [item, setItem] = useState<ItemType | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

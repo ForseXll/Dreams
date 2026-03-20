@@ -14,14 +14,13 @@
   },
   "dependencies": {
     "date-fns": "^4.1.0",
-    "downshift": "^2.2.3",
     "lodash.debounce": "^4.0.8",
     "next": "^15.2.4",
     "nprogress": "^0.2.0",
+    "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-stripe-checkout": "^2.6.3",
-    "react-transition-group": "^4.4.5",
     "styled-components": "^6.1.15"
   },
   "devDependencies": {

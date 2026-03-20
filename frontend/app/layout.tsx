@@ -7,14 +7,14 @@ export const metadata: Metadata = {
   title: 'Dreams',
   description: 'Dreams storefront frontend',
   icons: {
-    icon: '/static/favicon.png',
+    icon: '/favicon.png',
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <StyledRegistry>
           <Providers>{children}</Providers>
         </StyledRegistry>

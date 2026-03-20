@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { formatDistance } from 'date-fns';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ErrorMessage from './ErrorMessage';
 import OrderItemStyles from './styles/OrderItemStyles';
+import TimeText from './TimeText';
+import type { Order, OrderItem } from '../lib/api/types';
 import formatMoney from '../lib/formatMoney';
 import { listOrders } from '../lib/api';
 
@@ -24,7 +25,7 @@ const UlStyle = styled.ul`
 export default function OrderList() {
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(true);
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
     let active = true;
@@ -36,7 +37,7 @@ export default function OrderList() {
         const response = await listOrders();
 
         if (active) {
-          setOrders(response || []);
+          setOrders(response);
         }
       } catch (nextError) {
         if (active) {
@@ -75,13 +76,15 @@ export default function OrderList() {
             <Link href={{ pathname: '/order', query: { id: order.id } }}>
               <div>
                 <div className="order-meta">
-                  <p>{order.orderItems.reduce((total: number, item: any) => total + item.quantity, 0)}</p>
+                  <p>{order.orderItems.reduce((total: number, item: OrderItem) => total + item.quantity, 0)}</p>
                   <p>{order.orderItems.length} Products</p>
-                  <p>{formatDistance(new Date(order.createdAt), new Date())}</p>
+                  <p>
+                    <TimeText mode="relative" value={order.createdAt} />
+                  </p>
                   <p>Total: {formatMoney(order.total)}</p>
                 </div>
                 <div className="images">
-                  {order.orderItems.map((item: any) => (
+                  {order.orderItems.map((item: OrderItem) => (
                     <img className="img-list" src={item.image} alt={item.title} key={item.id} />
                   ))}
                 </div>

@@ -38,8 +38,9 @@ export default function Account() {
           return <p>Please sign in to view your account.</p>;
         }
 
+        const permissions = data.me.permissions;
         const canManagePermissions =
-          data.me.permissions.includes('ADMIN') || data.me.permissions.includes('PERMISSIONUPDATE');
+          permissions.includes('ADMIN') || permissions.includes('PERMISSIONUPDATE');
 
         return (
           <AccountPage>
@@ -48,7 +49,7 @@ export default function Account() {
             </div>
             <h3>Hello {data.me.name}!</h3>
             <p>Email: {data.me.email}</p>
-            <p>Permissions: {data.me.permissions.join(', ') || 'USER'}</p>
+            <p>Permissions: {permissions.join(', ') || 'USER'}</p>
             <button
               onClick={() => {
                 if (!canManagePermissions) {

@@ -10,7 +10,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'pnpm dev',
+    command: 'pnpm build && pnpm start',
     port: 7777,
     reuseExistingServer: false,
     timeout: 120000,

@@ -2,15 +2,32 @@
 
 import NProgress from 'nprogress';
 import { useRouter } from 'next/navigation';
-import type { ReactNode } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import StripeCheckout from 'react-stripe-checkout';
+import type { CartItem } from '../lib/api/types';
 import calcTotalPrice from '../lib/calcTotalPrice';
 import { createOrder } from '../lib/api';
 import { useAppState } from '../lib/appState';
 
-const StripeCheckoutButton = StripeCheckout as any;
+interface StripeToken {
+  id: string;
+}
 
-function totalItems(cart: any[]) {
+interface StripeCheckoutProps {
+  amount: number;
+  children?: ReactNode;
+  currency: string;
+  description: string;
+  email?: string;
+  image?: string;
+  name: string;
+  stripeKey: string;
+  token: (token: StripeToken) => void | Promise<void>;
+}
+
+const StripeCheckoutButton = StripeCheckout as unknown as ComponentType<StripeCheckoutProps>;
+
+function totalItems(cart: CartItem[]) {
   return cart.reduce((tally, cartItem) => tally + cartItem.quantity, 0);
 }
 
@@ -22,13 +39,13 @@ export default function TakeMyMoney({ children }: TakeMyMoneyProps) {
   const app = useAppState();
   const router = useRouter();
 
-  const onToken = async (response: { id: string }) => {
+  const onToken = async (response: StripeToken) => {
     NProgress.start();
 
     try {
       const order = await createOrder({ stripeToken: response.id });
       await app.refreshCart();
-      router.push(`/order?id=${order?.id}`);
+      router.push(`/order?id=${order.id}`);
       router.refresh();
     } catch (error) {
       window.alert((error as Error).message);

@@ -1,57 +1,31 @@
-import styled from 'styled-components';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import styled, { keyframes } from 'styled-components';
 
-const Circle = styled.div`
-    background-color: red;
-    color: white;
-    border-radius: 50%;
-    padding: 0.5rem;
-    line-height: 2rem;
-    min-width: 3rem;
-    margin-left: 1rem;
-    font-weight: 100;
-    font-feature-settings: 'tnum';
-    font-variant-numeric: tabular-nums;
+const popIn = keyframes`
+  from {
+    opacity: 0;
+    transform: rotateY(0.5turn) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: rotateY(0turn) scale(1);
+  }
 `;
 
-const Animation = styled.span`
-    position: relative;
-    .count {
-        display: block;
-        position: relative;
-        transition: 0.5s;
-        backface-visibility: hidden;
-    }
-    .count-enter {
-        transform: rotateY(0.5turn);
-    }
-    .count-enter-active {
-        transform: rotateY(0);
-    }
-    .count-exit {
-        top: 0;
-        position: absolute;
-        transform: rotateY(0);
-    }
-    .count-exit-active {
-        transform: rotateY(0.5turn);
-    }
+const Circle = styled.div`
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 0.5rem;
+  line-height: 2rem;
+  min-width: 3rem;
+  margin-left: 1rem;
+  font-weight: 100;
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+  animation: ${popIn} 0.35s ease;
 `;
 
 export default function CartCount({ count }: { count: number }) {
-  return (
-    <Animation>
-      <TransitionGroup>
-        <CSSTransition
-          unmountOnExit
-          className="count"
-          classNames="count"
-          key={count}
-          timeout={{ enter: 500, exit: 500 }}
-        >
-          {count === 0 ? <Circle /> : <Circle>{count}</Circle>}
-        </CSSTransition>
-      </TransitionGroup>
-    </Animation>
-  );
+  return <Circle key={count}>{count === 0 ? '' : count}</Circle>;
 }

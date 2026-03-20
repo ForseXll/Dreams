@@ -8,10 +8,8 @@ import {
   registerUser,
   removeCartItem,
 } from './api';
+import type { Cart, CartItem, CurrentUser } from './api/types';
 
-type CurrentUser = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
-type CartResponse = Awaited<ReturnType<typeof getCart>>;
-type CartItem = NonNullable<CartResponse> extends { cartItems?: (infer Item)[] } ? Item : any;
 type LoginInput = Parameters<typeof loginUser>[0];
 type RegisterInput = Parameters<typeof registerUser>[0];
 
@@ -25,7 +23,7 @@ interface AppContextValue {
   currentUser: CurrentUser | null;
   login: (input: LoginInput) => Promise<unknown>;
   logout: () => Promise<void>;
-  refreshCart: () => Promise<CartResponse | null>;
+  refreshCart: () => Promise<Cart | null>;
   refreshSession: () => Promise<CurrentUser | null>;
   register: (input: RegisterInput) => Promise<unknown>;
   removeFromCart: (cartItemId: number | string) => Promise<unknown>;
@@ -35,7 +33,7 @@ interface AppContextValue {
 const AppContext = createContext<AppContextValue | null>(null);
 
 function getCartCount(cart: CartItem[]) {
-  return cart.reduce((total, cartItem) => total + (cartItem.quantity || 0), 0);
+  return cart.reduce((total, cartItem) => total + cartItem.quantity, 0);
 }
 
 function useAppStateValue(): AppContextValue {
@@ -52,7 +50,7 @@ function useAppStateValue(): AppContextValue {
 
     try {
       const cartResponse = await getCart();
-      const nextCart = cartResponse?.cartItems || [];
+      const nextCart = cartResponse.cartItems;
       setCart(nextCart);
       return cartResponse;
     } catch (error) {
@@ -68,13 +66,6 @@ function useAppStateValue(): AppContextValue {
   const refreshSession = useCallback(async () => {
     try {
       const user = await getCurrentUser();
-
-      if (!user) {
-        setCurrentUser(null);
-        setCart([]);
-        return null;
-      }
-
       setCurrentUser(user);
       return user;
     } catch (error) {
