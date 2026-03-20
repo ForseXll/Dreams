@@ -8,6 +8,7 @@ import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder', {
   apiVersion: '2023-10-16',
 });
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:7777';
 
 const createOrderSchema = z.object({
   stripeToken: z.string(),
@@ -295,8 +296,8 @@ export async function orderRoutes(fastify) {
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${process.env.FRONTEND_URL}/order?success=true`,
-      cancel_url: `${process.env.FRONTEND_URL}/cart?canceled=true`,
+      success_url: `${frontendUrl}/order?success=true`,
+      cancel_url: `${frontendUrl}/cart?canceled=true`,
       metadata: {
         userId: request.user.userId.toString(),
       },

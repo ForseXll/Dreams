@@ -1,14 +1,27 @@
 import { verifyToken } from '../lib/jwt';
 
+export function getRequestToken(request) {
+  const authHeader = request.headers.authorization;
+
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.slice(7);
+  }
+
+  if (request.cookies && request.cookies.token) {
+    return request.cookies.token;
+  }
+
+  return null;
+}
+
 export async function authMiddleware(request, reply) {
   try {
-    const authHeader = request.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    const token = getRequestToken(request);
+
+    if (!token) {
       return reply.status(401).send({ error: 'Unauthorized' });
     }
 
-    const token = authHeader.slice(7);
     const payload = verifyToken(token);
     request.user = payload;
   } catch (error) {

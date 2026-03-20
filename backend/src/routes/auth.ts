@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import { hashPassword, verifyPassword, signToken, generateResetToken } from '../lib/jwt';
 import nodemailer from 'nodemailer';
 import { logger } from '../logger/logger-provider';
+import { getRequestToken } from '../middleware/auth';
 
 const registerSchema = z.object({
   name: z.string().min(1),
@@ -35,6 +36,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:7777';
+
 async function getUserPermissions(userId: number) {
   const userPerms = await db
     .select({ permission: permissions.name })
@@ -56,6 +59,16 @@ async function assignPermission(userId: number, permissionName: string) {
       permissionId: perm.id,
     });
   }
+}
+
+function setAuthCookie(reply, token: string) {
+  reply.setCookie('token', token, {
+    path: '/',
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 60 * 60 * 24 * 7,
+  });
 }
 
 export async function authRoutes(fastify) {
@@ -121,6 +134,7 @@ export async function authRoutes(fastify) {
     await assignPermission(user.id, 'USER');
 
     const token = signToken({ userId: user.id, email: user.email });
+    setAuthCookie(reply, token);
 
     return { user: { id: user.id, name: user.name, email: user.email }, token };
   });
@@ -178,6 +192,7 @@ export async function authRoutes(fastify) {
     }
 
     const token = signToken({ userId: user.id, email: user.email });
+    setAuthCookie(reply, token);
 
     return { user: { id: user.id, name: user.name, email: user.email }, token };
   });
@@ -221,7 +236,7 @@ export async function authRoutes(fastify) {
       .set({ resetToken, resetTokenExpiry: resetExpiry })
       .where(eq(users.id, user.id));
 
-    const resetUrl = `${process.env.FRONTEND_URL}/reset?token=${resetToken}`;
+    const resetUrl = `${frontendUrl}/reset?token=${resetToken}`;
 
     try {
       await transporter.sendMail({
@@ -310,13 +325,11 @@ export async function authRoutes(fastify) {
       },
     },
   }, async (request, reply) => {
-    const authHeader = request.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    const token = getRequestToken(request);
+
+    if (!token) {
       return reply.status(401).send({ error: 'Unauthorized' });
     }
-
-    const token = authHeader.slice(7);
     const { verifyToken } = await import('../lib/jwt');
     
     try {
@@ -340,5 +353,29 @@ export async function authRoutes(fastify) {
     } catch {
       return reply.status(401).send({ error: 'Invalid token' });
     }
+  });
+
+  fastify.post('/logout', {
+    schema: {
+      tags: ['Auth'],
+      summary: 'Logout current user',
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+          },
+        },
+      },
+    },
+  }, async (_request, reply) => {
+    reply.clearCookie('token', {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    });
+
+    return { message: 'Logged out' };
   });
 }

@@ -8,6 +8,7 @@ import { authRoutes } from './routes/auth';
 import { itemRoutes } from './routes/items';
 import { cartRoutes } from './routes/cart';
 import { orderRoutes } from './routes/orders';
+import { userRoutes } from './routes/users';
 import { createFastifyLoggerOptions, logger as appLogger } from './logger/logger-provider';
 
 export interface CreateAppOptions {
@@ -24,7 +25,7 @@ export async function createApp(opts: CreateAppOptions = {}) {
   const PORT = parseInt(process.env.PORT || '4000');
 
   await fastify.register(cors, {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL || 'http://localhost:7777',
     credentials: true,
   });
 
@@ -82,6 +83,7 @@ export async function createApp(opts: CreateAppOptions = {}) {
   fastify.register(itemRoutes, { prefix: '/api' });
   fastify.register(cartRoutes, { prefix: '/api' });
   fastify.register(orderRoutes, { prefix: '/api' });
+  fastify.register(userRoutes, { prefix: '/api' });
 
   fastify.get('/health', async () => {
     return { status: 'ok', timestamp: new Date().toISOString() };
