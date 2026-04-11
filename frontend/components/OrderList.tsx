@@ -2,25 +2,12 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import ErrorMessage from './ErrorMessage';
-import OrderItemStyles from './styles/OrderItemStyles';
 import TimeText from './TimeText';
 import type { Order, OrderItem } from '../lib/api/types';
+import { panelClass } from '../lib/ui';
 import formatMoney from '../lib/formatMoney';
 import { listOrders } from '../lib/api';
-
-const UlStyle = styled.ul`
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(60%, 1fr));
-    border: 2px solid black;
-    justify-content: start;
-    padding-inline-start: 0px;
-    .img-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(10, 1fr));
-    }
-`;
 
 export default function OrderList() {
   const [error, setError] = useState<Error | null>(null);
@@ -67,32 +54,34 @@ export default function OrderList() {
 
   return (
     <>
-      <div>
+      <div className="mb-5 text-[1.6rem]">
         You have {orders.length} Order{orders.length === 1 ? '' : 's'}!
       </div>
-      <UlStyle>
+      <ul className="grid list-none gap-6 p-0">
         {orders.map((order) => (
-          <OrderItemStyles key={order.id}>
+          <li className={`${panelClass} list-none p-6`} key={order.id}>
             <Link href={{ pathname: '/order', query: { id: order.id } }}>
               <div>
-                <div className="order-meta">
-                  <p>{order.orderItems.reduce((total: number, item: OrderItem) => total + item.quantity, 0)}</p>
-                  <p>{order.orderItems.length} Products</p>
-                  <p>
+                <div className="grid gap-3 text-center sm:grid-cols-4">
+                  <p className="m-0 bg-[var(--color-surface-alt)] px-3 py-3">
+                    {order.orderItems.reduce((total: number, item: OrderItem) => total + item.quantity, 0)}
+                  </p>
+                  <p className="m-0 bg-[var(--color-surface-alt)] px-3 py-3">{order.orderItems.length} Products</p>
+                  <p className="m-0 bg-[var(--color-surface-alt)] px-3 py-3">
                     <TimeText mode="relative" value={order.createdAt} />
                   </p>
-                  <p>Total: {formatMoney(order.total)}</p>
+                  <p className="m-0 bg-[var(--color-surface-alt)] px-3 py-3">Total: {formatMoney(order.total)}</p>
                 </div>
-                <div className="images">
+                <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-[repeat(auto-fit,minmax(0,1fr))]">
                   {order.orderItems.map((item: OrderItem) => (
-                    <img className="img-list" src={item.image} alt={item.title} key={item.id} />
+                    <img className="h-[200px] w-full rounded-lg object-cover" src={item.image} alt={item.title} key={item.id} />
                   ))}
                 </div>
               </div>
             </Link>
-          </OrderItemStyles>
+          </li>
         ))}
-      </UlStyle>
+      </ul>
     </>
   );
 }

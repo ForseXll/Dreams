@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import ErrorMessage from './ErrorMessage';
-import OrderStyles from './styles/OrderStyles';
 import TimeText from './TimeText';
 import type { OrderItem, SingleOrder } from '../lib/api/types';
 import formatMoney from '../lib/formatMoney';
+import { panelClass } from '../lib/ui';
 import { completeCheckoutSession, getOrder } from '../lib/api';
 import { useAppState } from '../lib/appState';
 
@@ -68,36 +68,39 @@ export default function Order({ id, sessionId }: OrderProps) {
   }
 
   return (
-    <OrderStyles>
-      <p>Order Id: {order.id}</p>
-      <p>
-        <span>Charge</span>
+    <div className={`${panelClass} mx-auto max-w-[1000px] border-t-4 border-t-[var(--color-danger)] p-6`}>
+      <div className="grid border-b border-[var(--color-border)] py-3 md:grid-cols-[140px_1fr]">
+        <span className="font-bold md:text-right md:pr-4">Order Id</span>
+        <span>{order.id}</span>
+      </div>
+      <div className="grid border-b border-[var(--color-border)] py-3 md:grid-cols-[140px_1fr]">
+        <span className="font-bold md:text-right md:pr-4">Charge</span>
         <span>{order.charge}</span>
-      </p>
-      <p>
-        <span>Date</span>
+      </div>
+      <div className="grid border-b border-[var(--color-border)] py-3 md:grid-cols-[140px_1fr]">
+        <span className="font-bold md:text-right md:pr-4">Date</span>
         <TimeText mode="absolute" value={order.createdAt} />
-      </p>
-      <p>
-        <span>Total</span>
+      </div>
+      <div className="grid border-b border-[var(--color-border)] py-3 md:grid-cols-[140px_1fr]">
+        <span className="font-bold md:text-right md:pr-4">Total</span>
         <span>{formatMoney(order.total)}</span>
-      </p>
-      <p>
-        <span>Item Count</span>
+      </div>
+      <div className="grid border-b border-[var(--color-border)] py-3 md:grid-cols-[140px_1fr]">
+        <span className="font-bold md:text-right md:pr-4">Item Count</span>
         <span>{order.orderItems.length}</span>
-      </p>
+      </div>
       {order.orderItems.map((item: OrderItem) => (
-        <div className="order-item" key={item.id}>
-          <img src={item.image} alt={item.title} />
+        <div className="my-6 grid items-center gap-6 border-b border-[var(--color-border)] pb-6 md:grid-cols-[300px_1fr]" key={item.id}>
+          <img className="h-full w-full rounded-lg object-cover" src={item.image} alt={item.title} />
           <div className="item-details">
-            <h2>{item.title}</h2>
-            <p>{item.description}</p>
-            <p>Quantity: {item.quantity}</p>
-            <p>Each: {formatMoney(item.price)}</p>
-            <p>SubTotal: {formatMoney(item.price * item.quantity)}</p>
+            <h2 className="m-0 text-[2.4rem] font-bold tracking-[-0.03em]">{item.title}</h2>
+            <p className="mb-3 mt-3 text-[1.5rem] leading-[1.6] text-[var(--color-muted)]">{item.description}</p>
+            <p className="m-0">Quantity: {item.quantity}</p>
+            <p className="m-0">Each: {formatMoney(item.price)}</p>
+            <p className="m-0">SubTotal: {formatMoney(item.price * item.quantity)}</p>
           </div>
         </div>
       ))}
-    </OrderStyles>
+    </div>
   );
 }

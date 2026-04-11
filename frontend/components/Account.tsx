@@ -1,28 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import styled from 'styled-components';
+import { panelClass, primaryButtonClass, quietButtonClass } from '../lib/ui';
 import User from './User';
-
-const AccountPage = styled.div`
-    width: ${(props) => props.theme.maxWidth};
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-gap: 10px;
-    border: 2px solid black;
-    padding: 10px;
-    margin: 5px;
-
-    button {
-        background: teal;
-        justify-self: start;
-        cursor: pointer;
-    }
-
-    .request {
-        justify-self: center;
-    }
-`;
 
 export default function Account() {
   const router = useRouter();
@@ -43,14 +23,15 @@ export default function Account() {
           permissions.includes('ADMIN') || permissions.includes('PERMISSIONUPDATE');
 
         return (
-          <AccountPage>
+          <div className={`${panelClass} grid gap-3 p-4`}>
             <div>
-              <h1>Account Info</h1>
+              <h1 className="m-0 text-[2.8rem] font-bold tracking-[-0.03em]">Account Info</h1>
             </div>
-            <h3>Hello {data.me.name}!</h3>
-            <p>Email: {data.me.email}</p>
-            <p>Permissions: {permissions.join(', ') || 'USER'}</p>
+            <h3 className="m-0 text-[2rem] font-semibold">Hello {data.me.name}!</h3>
+            <p className="m-0">Email: {data.me.email}</p>
+            <p className="m-0">Permissions: {permissions.join(', ') || 'USER'}</p>
             <button
+              className={`${primaryButtonClass} w-fit`}
               onClick={() => {
                 if (!canManagePermissions) {
                   window.alert("You don't have permission to go there.");
@@ -62,10 +43,10 @@ export default function Account() {
             >
               Permissions
             </button>
-            <button className="request" disabled>
+            <button className={`${quietButtonClass} justify-self-center`} disabled>
               Request Permissions Coming Soon
             </button>
-          </AccountPage>
+          </div>
         );
       }}
     </User>

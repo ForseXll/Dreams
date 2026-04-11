@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import ErrorMessage from './ErrorMessage';
-import Table from './styles/Table';
 import type { PermissionName, UserWithPermissions } from '../lib/api/types';
+import { primaryButtonClass } from '../lib/ui';
 import { listUsers, updateUserPermissions } from '../lib/api';
 
 const POSSIBLE_PERMISSIONS: PermissionName[] = [
@@ -64,16 +64,17 @@ export default function Permissions() {
     <div>
       <ErrorMessage error={error || undefined} />
       <div>
-        <h2>Manage Permissions</h2>
-        <Table>
+        <h2 className="mb-4 text-[2.4rem] font-bold tracking-[-0.03em]">Manage Permissions</h2>
+        <div className="overflow-x-auto rounded-[10px] border border-[var(--color-border)] bg-white shadow-[0_4px_12px_rgba(27,24,22,0.08)]">
+          <table className="w-full border-spacing-0">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Email</th>
+              <th className="border-r border-b border-[var(--color-border)] p-2 text-left text-[1rem] uppercase tracking-[0.08em]">Name</th>
+              <th className="border-r border-b border-[var(--color-border)] p-2 text-left text-[1rem] uppercase tracking-[0.08em]">Email</th>
               {POSSIBLE_PERMISSIONS.map((permission) => (
-                <th key={permission}>{permission}</th>
+                <th className="border-r border-b border-[var(--color-border)] p-2 text-left text-[1rem] uppercase tracking-[0.08em]" key={permission}>{permission}</th>
               ))}
-              <th>Update</th>
+              <th className="border-b border-[var(--color-border)] p-2 text-left text-[1rem] uppercase tracking-[0.08em]">Update</th>
             </tr>
           </thead>
           <tbody>
@@ -81,7 +82,8 @@ export default function Permissions() {
               <UserPermissions key={user.id} user={user} onSaved={handleSaved} />
             ))}
           </tbody>
-        </Table>
+          </table>
+        </div>
       </div>
     </div>
   );
@@ -123,17 +125,17 @@ function UserPermissions({ onSaved, user }: { onSaved: (user: UserWithPermission
     <>
       {error ? (
         <tr>
-          <td colSpan={9}>
+          <td className="p-2" colSpan={9}>
             <ErrorMessage error={error} />
           </td>
         </tr>
       ) : null}
       <tr>
-        <td>{user.name}</td>
-        <td>{user.email}</td>
+        <td className="border-r border-b border-[var(--color-border)] p-2">{user.name}</td>
+        <td className="border-r border-b border-[var(--color-border)] p-2">{user.email}</td>
         {POSSIBLE_PERMISSIONS.map((permission) => (
-          <td key={`${user.id}-${permission}`}>
-            <label htmlFor={`${user.id}-permission-${permission}`}>
+          <td className="border-r border-b border-[var(--color-border)] p-2" key={`${user.id}-${permission}`}>
+            <label className="block" htmlFor={`${user.id}-permission-${permission}`}>
               <input
                 type="checkbox"
                 id={`${user.id}-permission-${permission}`}
@@ -144,8 +146,8 @@ function UserPermissions({ onSaved, user }: { onSaved: (user: UserWithPermission
             </label>
           </td>
         ))}
-        <td>
-          <button type="button" disabled={loading} onClick={savePermissions}>
+        <td className="border-b border-[var(--color-border)] p-2">
+          <button className={primaryButtonClass} type="button" disabled={loading} onClick={savePermissions}>
             Updat{loading ? 'ing' : 'e'}
           </button>
         </td>

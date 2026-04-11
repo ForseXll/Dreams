@@ -1,5 +1,3 @@
-import styled from 'styled-components';
-
 type ErrorLike = {
   message?: string;
   networkError?: {
@@ -8,21 +6,6 @@ type ErrorLike = {
     };
   };
 };
-
-const ErrorStyles = styled.div`
-  padding: 2rem;
-  background: white;
-  margin: 2rem 0;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-left: 5px solid black;
-  p {
-    margin: 0;
-    font-weight: 100;
-  }
-  strong {
-    margin-right: 1rem;
-  }
-`;
 
 function cleanMessage(message: string) {
   return message.replace('GraphQL error: ', '');
@@ -39,23 +22,26 @@ export default function ErrorMessage({ error }: { error?: ErrorLike }) {
     return (
       <>
         {networkErrors.map((networkError, index) => (
-          <ErrorStyles key={index}>
-            <p data-test="request-error">
-              <strong>Shoot!</strong>
+          <div
+            className="my-4 border border-black/5 border-l-[5px] border-l-[var(--color-text)] bg-white p-5"
+            key={index}
+          >
+            <p className="m-0 font-normal" data-test="request-error">
+              <strong className="mr-4">Shoot!</strong>
               {cleanMessage(networkError.message)}
             </p>
-          </ErrorStyles>
+          </div>
         ))}
       </>
     );
   }
 
   return (
-    <ErrorStyles>
-      <p data-test="request-error">
-        <strong>Shoot!</strong>
+    <div className="my-4 border border-black/5 border-l-[5px] border-l-[var(--color-text)] bg-white p-5">
+      <p className="m-0 font-normal" data-test="request-error">
+        <strong className="mr-4">Shoot!</strong>
         {cleanMessage(error.message)}
       </p>
-    </ErrorStyles>
+    </div>
   );
 }

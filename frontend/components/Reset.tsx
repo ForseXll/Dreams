@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ErrorMessage from './ErrorMessage';
-import Form from './styles/Form';
+import { fieldsetClass, formClass, inputClass, primaryButtonClass } from '../lib/ui';
 import { resetPassword } from '../lib/api';
 
 interface ResetProps {
@@ -40,13 +40,14 @@ export default function Reset({ resetToken }: ResetProps) {
   };
 
   return (
-    <Form method="post" onSubmit={handleSubmit}>
-      <fieldset disabled={loading} aria-busy={loading}>
-        <h2>Reset Your Password</h2>
+    <form className={formClass} method="post" onSubmit={handleSubmit}>
+      <fieldset className={fieldsetClass} disabled={loading} aria-busy={loading}>
+        <h2 className="m-0 text-[2.2rem] font-bold tracking-[-0.03em]">Reset Your Password</h2>
         <ErrorMessage error={error || undefined} />
         <label htmlFor="password">
           Password
           <input
+            className={inputClass}
             type="password"
             name="password"
             placeholder="password"
@@ -57,6 +58,7 @@ export default function Reset({ resetToken }: ResetProps) {
         <label htmlFor="confirmPassword">
           Confirm Your Password
           <input
+            className={inputClass}
             type="password"
             name="confirmPassword"
             placeholder="confirmPassword"
@@ -64,8 +66,8 @@ export default function Reset({ resetToken }: ResetProps) {
             onChange={(event) => setConfirmPassword(event.target.value)}
           />
         </label>
-        <button type="submit">Reset Password!</button>
+        <button className={primaryButtonClass} type="submit">Reset Password!</button>
       </fieldset>
-    </Form>
+    </form>
   );
 }

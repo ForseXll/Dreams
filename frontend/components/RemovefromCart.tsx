@@ -1,24 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import styled from 'styled-components';
 import { useAppState } from '../lib/appState';
 
 interface RemoveFromCartProps {
+  className?: string;
   id: number | string;
 }
 
-const Button = styled.button`
-    font-size: 3rem;
-    background: none;
-    border: 0;
-    &:hover {
-        color: pink;
-        cursor: pointer;
-    }
-`;
-
-export default function RemoveFromCart({ id }: RemoveFromCartProps) {
+export default function RemoveFromCart({ className, id }: RemoveFromCartProps) {
   const app = useAppState();
   const [loading, setLoading] = useState(false);
 
@@ -33,8 +23,13 @@ export default function RemoveFromCart({ id }: RemoveFromCartProps) {
   };
 
   return (
-    <Button title="Delete Item" onClick={remove} disabled={loading}>
+    <button
+      className={className || 'text-[2.4rem] leading-none text-[var(--color-muted)] transition-colors hover:text-[var(--color-danger)] disabled:opacity-50'}
+      title="Delete Item"
+      onClick={remove}
+      disabled={loading}
+    >
       X
-    </Button>
+    </button>
   );
 }

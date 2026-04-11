@@ -1,7 +1,12 @@
 import type { Metadata } from 'next';
+import { Manrope } from 'next/font/google';
 import './globals.css';
 import Providers from './providers';
-import StyledRegistry from './styled-registry';
+
+const manrope = Manrope({
+  subsets: ['latin'],
+  variable: '--font-sans',
+});
 
 export const metadata: Metadata = {
   title: 'Dreams',
@@ -14,10 +19,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning>
-        <StyledRegistry>
-          <Providers>{children}</Providers>
-        </StyledRegistry>
+      <body className={`${manrope.variable} font-sans`} suppressHydrationWarning>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

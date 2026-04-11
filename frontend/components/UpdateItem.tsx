@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ErrorMessage from './ErrorMessage';
-import Form from './styles/Form';
+import { fieldsetClass, formClass, inputClass, primaryButtonClass } from '../lib/ui';
 import { getItem, updateItem } from '../lib/api';
 
 interface UpdateItemProps {
@@ -74,12 +74,13 @@ export default function UpdateItem({ id }: UpdateItemProps) {
   }
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <form className={formClass} onSubmit={handleSubmit}>
       <ErrorMessage error={error || undefined} />
-      <fieldset disabled={loading} aria-busy={loading}>
+      <fieldset className={fieldsetClass} disabled={loading} aria-busy={loading}>
         <label htmlFor="title">
           Title
           <input
+            className={inputClass}
             type="text"
             id="title"
             name="title"
@@ -93,6 +94,7 @@ export default function UpdateItem({ id }: UpdateItemProps) {
         <label htmlFor="price">
           Price
           <input
+            className={inputClass}
             type="number"
             id="price"
             name="price"
@@ -106,6 +108,7 @@ export default function UpdateItem({ id }: UpdateItemProps) {
         <label htmlFor="description">
           Description
           <textarea
+            className={`${inputClass} min-h-48 resize-y`}
             id="description"
             name="description"
             placeholder="Enter a Description"
@@ -114,8 +117,8 @@ export default function UpdateItem({ id }: UpdateItemProps) {
             onChange={(event) => setDescription(event.target.value)}
           />
         </label>
-        <button type="submit">Sav{loading ? 'ing' : 'e'} Changes</button>
+        <button className={primaryButtonClass} type="submit">Sav{loading ? 'ing' : 'e'} Changes</button>
       </fieldset>
-    </Form>
+    </form>
   );
 }

@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Item } from '../lib/api/types';
 import { listItems } from '../lib/api';
-import { DropDown, DropDownItem, SearchStyles } from './styles/DropDown';
 
 export default function Search() {
   const router = useRouter();
@@ -87,13 +86,13 @@ export default function Search() {
   };
 
   return (
-    <SearchStyles>
-      <div ref={containerRef}>
+    <div className="relative" ref={containerRef}>
+      <div className="relative">
         <input
           type="search"
           placeholder="Search for Item"
           id="search"
-          className={loading ? 'loading' : ''}
+          className={`w-full border-0 bg-transparent px-6 py-4 text-[1.6rem] outline-none placeholder:text-[var(--color-muted)] ${loading ? 'animate-pulse' : ''}`}
           value={inputValue}
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
@@ -104,25 +103,27 @@ export default function Search() {
           }}
         />
         {isOpen ? (
-          <DropDown>
+          <div className="absolute left-0 top-full z-[2] w-full rounded-b-[10px] border border-[var(--color-border)] bg-white shadow-[0_10px_30px_rgba(27,24,22,0.08)]">
             {items.map((item, index) => (
-              <DropDownItem
+              <div
+                className={`flex items-center gap-3 border-b border-[var(--color-border)] px-4 py-3 text-[1.4rem] transition-colors last:border-b-0 ${index === highlightedIndex ? 'bg-[var(--color-surface-alt)] pl-6' : 'bg-white'}`}
                 key={item.id}
-                highlighted={index === highlightedIndex}
                 onMouseEnter={() => setHighlightedIndex(index)}
                 onMouseDown={(event) => {
                   event.preventDefault();
                   handleSelect(item);
                 }}
               >
-                <img width="50" src={item.image} alt={item.title} />
+                <img className="h-12 w-12 object-cover" src={item.image} alt={item.title} width="50" />
                 {item.title}
-              </DropDownItem>
+              </div>
             ))}
-            {!items.length && !loading ? <DropDownItem>Nothing Found for "{inputValue}"</DropDownItem> : null}
-          </DropDown>
+            {!items.length && !loading ? (
+              <div className="px-4 py-3 text-[1.4rem] text-[var(--color-muted)]">Nothing Found for "{inputValue}"</div>
+            ) : null}
+          </div>
         ) : null}
       </div>
-    </SearchStyles>
+    </div>
   );
 }

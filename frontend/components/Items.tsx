@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { perPage } from '../config';
 import type { Item as ItemType } from '../lib/api/types';
 import { listItems } from '../lib/api';
@@ -11,18 +10,6 @@ import Pagination from './Pagination';
 interface ItemsProps {
   page: number;
 }
-
-const Center = styled.div`
-    text-align: center;
-`;
-
-const ItemList = styled.div`
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 20px;
-    margin: 0 auto;
-    max-width: ${(props) => props.theme.maxWidth};
-`;
 
 export default function Items({ page }: ItemsProps) {
   const [error, setError] = useState<Error | null>(null);
@@ -75,14 +62,14 @@ export default function Items({ page }: ItemsProps) {
   }
 
   return (
-    <Center>
+    <div className="grid gap-8 text-center">
       <Pagination page={page} count={total} />
-      <ItemList>
+      <div className="mx-auto grid w-full max-w-[1200px] gap-6 md:grid-cols-2">
         {items.map((item) => (
           <Item item={item} key={item.id} />
         ))}
-      </ItemList>
+      </div>
       <Pagination page={page} count={total} />
-    </Center>
+    </div>
   );
 }

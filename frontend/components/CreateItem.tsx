@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ErrorMessage from './ErrorMessage';
-import Form from './styles/Form';
+import { fieldsetClass, formClass, inputClass, primaryButtonClass } from '../lib/ui';
 import { createItem, uploadImageToCloudinary } from '../lib/api';
 
 export default function CreateItem() {
@@ -53,12 +53,13 @@ export default function CreateItem() {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <form className={formClass} onSubmit={handleSubmit}>
       <ErrorMessage error={error || undefined} />
-      <fieldset data-test="form" disabled={loading} aria-busy={loading}>
+      <fieldset className={fieldsetClass} data-test="form" disabled={loading} aria-busy={loading}>
         <label htmlFor="file">
           Image
           <input
+            className={inputClass}
             type="file"
             id="file"
             name="file"
@@ -66,12 +67,13 @@ export default function CreateItem() {
             required
             onChange={uploadFile}
           />
-          {image ? <img src={image} alt="Upload Preview" /> : null}
+          {image ? <img className="mt-3 max-h-64 rounded-lg border border-[var(--color-border)] object-cover" src={image} alt="Upload Preview" /> : null}
         </label>
 
         <label htmlFor="title">
           Title
           <input
+            className={inputClass}
             type="text"
             id="title"
             name="title"
@@ -85,6 +87,7 @@ export default function CreateItem() {
         <label htmlFor="price">
           Price
           <input
+            className={inputClass}
             type="number"
             id="price"
             name="price"
@@ -98,6 +101,7 @@ export default function CreateItem() {
         <label htmlFor="description">
           Description
           <textarea
+            className={`${inputClass} min-h-48 resize-y`}
             id="description"
             name="description"
             placeholder="Enter a Description"
@@ -107,8 +111,8 @@ export default function CreateItem() {
           />
         </label>
 
-        <button type="submit">Submit</button>
+        <button className={primaryButtonClass} type="submit">Submit</button>
       </fieldset>
-    </Form>
+    </form>
   );
 }

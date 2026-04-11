@@ -1,47 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import AddToCart from './AddToCart';
 import ErrorMessage from './ErrorMessage';
 import type { Item as ItemType } from '../lib/api/types';
 import formatMoney from '../lib/formatMoney';
+import { panelClass, primaryButtonClass } from '../lib/ui';
 import { getItem } from '../lib/api';
 
 interface SingleItemProps {
   id: number | string;
 }
-
-const Item = styled.div`
-    max-width: 1200px;
-    margin: 2rem auto;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-auto-flow: column;
-    min-height: 700px;
-    border: 2px solid black;
-    border-radius: 5px;
-    img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        border-right: 2px solid grey;
-    }
-    .details {
-        display: grid;
-        margin: 2rem;
-        grid-template-rows: 1fr;
-        grid-auto-flow: row;
-    }
-    button {
-        display: block;
-        background: teal;
-    }
-    p.price {
-        font-size: 20px;
-        font-weight: bold;
-    }
-`;
 
 export default function SingleItem({ id }: SingleItemProps) {
   const [error, setError] = useState<Error | null>(null);
@@ -92,16 +61,20 @@ export default function SingleItem({ id }: SingleItemProps) {
   }
 
   return (
-    <Item>
-      <img src={item.largeImage || item.image} alt={item.title} />
-      <div className="details">
-        <h2>Viewing {item.title}</h2>
-        <p>Item description: {item.description}</p>
-        <p className="price">Price: {formatMoney(item.price)}</p>
-        <AddToCart className="cart" id={item.id}>
+    <div className={`${panelClass} mx-auto grid max-w-[1200px] overflow-hidden lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]`}>
+      <img
+        className="h-full min-h-[420px] w-full border-b border-[var(--color-border)] object-contain lg:border-r lg:border-b-0"
+        src={item.largeImage || item.image}
+        alt={item.title}
+      />
+      <div className="grid content-start gap-5 p-8">
+        <h2 className="m-0 text-[2.8rem] font-bold tracking-[-0.03em]">Viewing {item.title}</h2>
+        <p className="m-0 text-[1.6rem] leading-[1.65] text-[var(--color-muted)]">Item description: {item.description}</p>
+        <p className="m-0 text-[2rem] font-bold">Price: {formatMoney(item.price)}</p>
+        <AddToCart className={primaryButtonClass} id={item.id}>
           Add to Cart
         </AddToCart>
       </div>
-    </Item>
+    </div>
   );
 }

@@ -5,11 +5,12 @@ import { useRouter } from 'next/navigation';
 import { deleteItem } from '../lib/api';
 
 interface DeleteItemProps {
+  className?: string;
   children?: ReactNode;
   id: number | string;
 }
 
-export default function DeleteItem({ children, id }: DeleteItemProps) {
+export default function DeleteItem({ children, className, id }: DeleteItemProps) {
   const router = useRouter();
 
   const handleDelete = async () => {
@@ -25,5 +26,9 @@ export default function DeleteItem({ children, id }: DeleteItemProps) {
     }
   };
 
-  return <button onClick={handleDelete}>{children}</button>;
+  return (
+    <button className={className} onClick={handleDelete}>
+      {children}
+    </button>
+  );
 }

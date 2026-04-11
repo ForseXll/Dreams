@@ -1,43 +1,27 @@
 import formatMoney from '../lib/formatMoney';
 import type { CartItem as CartItemType } from '../lib/api/types';
-import styled from 'styled-components';
 import RemoveFromCart from './RemovefromCart';
 
 interface CartItemProps {
   cartItem: CartItemType;
 }
 
-const CartItemStyle = styled.li`
-    padding: 1rem 0;
-    border-bottom: 1px solid black;
-    display: grid;
-    align-items: center;
-    grid-template-columns: auto 1fr auto;
-    img {
-        width: 100px;
-        margin: 10px;
-    }
-    h3, p {
-        margin: 0px;
-    }
-`;
-
 export default function CartItem({ cartItem }: CartItemProps) {
   if (!cartItem.item) {
     return (
-      <CartItemStyle>
+      <li className="grid grid-cols-[1fr_auto] items-center border-b border-[var(--color-border)] py-4 text-[1.5rem]">
         This Item doesn't exist anymore!
         <RemoveFromCart id={cartItem.id} />
-      </CartItemStyle>
+      </li>
     );
   }
 
   return (
-    <CartItemStyle>
-      <img src={cartItem.item.image} alt={cartItem.item.title} />
+    <li className="grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-[var(--color-border)] py-4">
+      <img className="h-20 w-20 rounded-lg object-cover" src={cartItem.item.image} alt={cartItem.item.title} />
       <div className="cart-item-deets">
-        <h3>{cartItem.item.title}</h3>
-        <p>
+        <h3 className="m-0 text-[1.6rem] font-semibold">{cartItem.item.title}</h3>
+        <p className="m-0 text-[1.4rem] text-[var(--color-muted)]">
           {formatMoney(cartItem.item.price * cartItem.quantity)}
           {'  --  '}
           <em>
@@ -46,6 +30,6 @@ export default function CartItem({ cartItem }: CartItemProps) {
         </p>
       </div>
       <RemoveFromCart id={cartItem.id} />
-    </CartItemStyle>
+    </li>
   );
 }
