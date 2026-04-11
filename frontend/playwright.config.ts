@@ -6,15 +6,26 @@ export default defineConfig({
   retries: 0,
   workers: 1,
   use: {
-    baseURL: 'http://127.0.0.1:7777',
+    baseURL: 'http://localhost:7777',
     trace: 'on-first-retry',
   },
-  webServer: {
-    command: 'pnpm build && pnpm start',
-    port: 7777,
-    reuseExistingServer: false,
-    timeout: 120000,
-  },
+  webServer: [
+    {
+      command: 'pnpm --filter backend start',
+      port: 4000,
+      reuseExistingServer: true,
+      timeout: 120000,
+    },
+    {
+      command: 'pnpm build && pnpm start',
+      port: 7777,
+      reuseExistingServer: true,
+      timeout: 120000,
+      env: {
+        NEXT_PUBLIC_API_URL: 'http://localhost:4000',
+      },
+    },
+  ],
   projects: [
     {
       name: 'chromium',

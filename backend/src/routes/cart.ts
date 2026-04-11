@@ -48,7 +48,7 @@ export async function cartRoutes(fastify) {
       },
     },
     preHandler: authMiddleware,
-  }, async (request, reply) => {
+  }, async (request) => {
     const cart = await db.query.cartItems.findMany({
       where: eq(cartItems.userId, request.user.userId),
       with: {
@@ -281,7 +281,7 @@ export async function cartRoutes(fastify) {
       },
     },
     preHandler: authMiddleware,
-  }, async (request, reply) => {
+  }, async (request) => {
     await db.delete(cartItems).where(eq(cartItems.userId, request.user.userId));
 
     return { message: 'Cart cleared' };

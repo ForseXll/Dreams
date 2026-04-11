@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { db } from '../db/index';
 import { permissions, userPermissions, users } from '../db/schema';
-import { authMiddleware } from '../middleware/auth';
+import { authMiddleware, requirePermission } from '../middleware/auth';
 
 const POSSIBLE_PERMISSIONS = [
   'ADMIN',
@@ -20,11 +20,6 @@ async function getUserPermissions(userId: number) {
     .where(eq(userPermissions.userId, userId));
 
   return rows.map((row) => row.permission);
-}
-
-async function canUpdatePermissions(userId: number) {
-  const currentPermissions = await getUserPermissions(userId);
-  return currentPermissions.includes('ADMIN') || currentPermissions.includes('PERMISSIONUPDATE');
 }
 
 async function syncPermissions(userId: number, nextPermissions: string[]) {
@@ -75,14 +70,8 @@ export async function userRoutes(fastify) {
         },
       },
     },
-    preHandler: authMiddleware,
-  }, async (request, reply) => {
-    const allowed = await canUpdatePermissions(request.user.userId);
-
-    if (!allowed) {
-      return reply.status(403).send({ error: 'Forbidden' });
-    }
-
+    preHandler: [authMiddleware, requirePermission('PERMISSIONUPDATE')],
+  }, async () => {
     const allUsers = await db.select().from(users);
     const usersWithPermissions = await Promise.all(
       allUsers.map(async (user) => ({
@@ -145,14 +134,8 @@ export async function userRoutes(fastify) {
         },
       },
     },
-    preHandler: authMiddleware,
+    preHandler: [authMiddleware, requirePermission('PERMISSIONUPDATE')],
   }, async (request, reply) => {
-    const allowed = await canUpdatePermissions(request.user.userId);
-
-    if (!allowed) {
-      return reply.status(403).send({ error: 'Forbidden' });
-    }
-
     const id = parseInt(request.params.id, 10);
 
     if (Number.isNaN(id)) {

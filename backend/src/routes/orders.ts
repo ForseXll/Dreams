@@ -55,7 +55,7 @@ export async function orderRoutes(fastify) {
       },
     },
     preHandler: authMiddleware,
-  }, async (request, reply) => {
+  }, async (request) => {
     const userOrders = await db.query.orders.findMany({
       where: eq(orders.userId, request.user.userId),
       with: {

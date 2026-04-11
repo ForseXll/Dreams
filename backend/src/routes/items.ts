@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { db } from '../db/index';
 import { items } from '../db/schema';
 import { eq, desc, like, sql } from 'drizzle-orm';
-import { authMiddleware } from '../middleware/auth';
+import { authMiddleware, hasAnyPermission, requirePermission } from '../middleware/auth';
 
 const createItemSchema = z.object({
   title: z.string().min(1),
@@ -61,7 +61,7 @@ export async function itemRoutes(fastify) {
         },
       },
     },
-  }, async (request, reply) => {
+  }, async (request) => {
     const skip = parseInt(request.query?.skip) || 0;
     const take = parseInt(request.query?.take) || 10;
     const search = request.query?.search;
@@ -178,8 +178,8 @@ export async function itemRoutes(fastify) {
         },
       },
     },
-    preHandler: authMiddleware,
-  }, async (request, reply) => {
+    preHandler: [authMiddleware, requirePermission('ITEMCREATE')],
+  }, async (request) => {
     const data = createItemSchema.parse(request.body);
 
     const [item] = await db
@@ -272,7 +272,9 @@ export async function itemRoutes(fastify) {
       return reply.status(404).send({ error: 'Item not found' });
     }
 
-    if (existingItem.userId !== request.user.userId) {
+    const canUpdateAnyItem = hasAnyPermission(request.permissions, ['ADMIN', 'ITEMUPDATE']);
+
+    if (existingItem.userId !== request.user.userId && !canUpdateAnyItem) {
       return reply.status(403).send({ error: 'Not authorized to update this item' });
     }
 
@@ -340,7 +342,9 @@ export async function itemRoutes(fastify) {
       return reply.status(404).send({ error: 'Item not found' });
     }
 
-    if (existingItem.userId !== request.user.userId) {
+    const canDeleteAnyItem = hasAnyPermission(request.permissions, ['ADMIN', 'ITEMDELETE']);
+
+    if (existingItem.userId !== request.user.userId && !canDeleteAnyItem) {
       return reply.status(403).send({ error: 'Not authorized to delete this item' });
     }
 

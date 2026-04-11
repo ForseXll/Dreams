@@ -23,9 +23,19 @@ export async function createApp(opts: CreateAppOptions = {}) {
   appLogger.provider.configure(fastify.log);
 
   const PORT = parseInt(process.env.PORT || '4000');
+  const allowedOrigins = process.env.FRONTEND_URL
+    ? process.env.FRONTEND_URL.split(',').map((origin) => origin.trim()).filter(Boolean)
+    : ['http://localhost:7777', 'http://127.0.0.1:7777'];
 
   await fastify.register(cors, {
-    origin: process.env.FRONTEND_URL || 'http://localhost:7777',
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error('Origin not allowed'), false);
+    },
     credentials: true,
   });
 

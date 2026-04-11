@@ -217,7 +217,7 @@ export async function authRoutes(fastify) {
         },
       },
     },
-  }, async (request, reply) => {
+  }, async (request) => {
     const data = requestResetSchema.parse(request.body);
 
     const user = await db.query.users.findFirst({

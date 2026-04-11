@@ -47,10 +47,16 @@ test('shop page renders items from the REST API', async ({ page }) => {
 });
 
 test('signup page shows the auth forms', async ({ page }) => {
-  await mockGuestSession(page);
+  const meResponsePromise = page.waitForResponse(
+    (response) =>
+      response.url().includes('/auth/me') &&
+      response.request().method() === 'GET'
+  );
 
   await page.goto('/signup');
+  const meResponse = await meResponsePromise;
 
+  expect(meResponse.status()).toBe(401);
   await expect(page.getByRole('heading', { name: 'Sign Up for an Account' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Sign In to your Account' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Request a Password Reset' })).toBeVisible();

@@ -8,12 +8,20 @@
     "dev": "pnpm -r dev",
     "build:frontend": "pnpm --filter frontend build",
     "build:backend": "pnpm --filter backend build",
-    "lint": "pnpm -r lint",
-    "lint:fix": "pnpm -r lint:fix",
+    "lint": "pnpm --filter frontend lint && pnpm --filter backend lint",
+    "lint:fix": "pnpm --filter frontend lint:fix && pnpm --filter backend lint:fix",
+    "typecheck": "pnpm --filter frontend typecheck && pnpm --filter backend typecheck",
     "db:push": "pnpm --filter backend db:push",
     "api:sync": "pnpm --filter backend openapi:export && pnpm --filter frontend api:types"
   },
   "engines": {
     "node": ">=24"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.38.0",
+    "@next/eslint-plugin-next": "^15.5.6",
+    "eslint": "^9.38.0",
+    "globals": "^16.4.0",
+    "typescript-eslint": "^8.46.1"
   }
 }
