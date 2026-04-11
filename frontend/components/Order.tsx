@@ -6,13 +6,16 @@ import OrderStyles from './styles/OrderStyles';
 import TimeText from './TimeText';
 import type { OrderItem, SingleOrder } from '../lib/api/types';
 import formatMoney from '../lib/formatMoney';
-import { getOrder } from '../lib/api';
+import { completeCheckoutSession, getOrder } from '../lib/api';
+import { useAppState } from '../lib/appState';
 
 interface OrderProps {
-  id: number | string;
+  id?: number | string;
+  sessionId?: string;
 }
 
-export default function Order({ id }: OrderProps) {
+export default function Order({ id, sessionId }: OrderProps) {
+  const app = useAppState();
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<SingleOrder | null>(null);
@@ -24,10 +27,15 @@ export default function Order({ id }: OrderProps) {
       try {
         setError(null);
         setLoading(true);
-        const response = await getOrder(id);
+        const response = sessionId
+          ? await completeCheckoutSession({ sessionId })
+          : id
+            ? await getOrder(id)
+            : null;
 
-        if (active) {
+        if (active && response) {
           setOrder(response);
+          await app.refreshCart().catch(() => null);
         }
       } catch (nextError) {
         if (active) {
@@ -45,7 +53,7 @@ export default function Order({ id }: OrderProps) {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [app, id, sessionId]);
 
   if (error) {
     return <ErrorMessage error={error} />;
@@ -61,7 +69,7 @@ export default function Order({ id }: OrderProps) {
 
   return (
     <OrderStyles>
-      <p>Order Id: {id}</p>
+      <p>Order Id: {order.id}</p>
       <p>
         <span>Charge</span>
         <span>{order.charge}</span>

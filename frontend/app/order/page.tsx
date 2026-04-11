@@ -8,6 +8,11 @@ export default async function OrderPage({
 }) {
   const params = await searchParams;
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
+  const sessionId = Array.isArray(params.session_id) ? params.session_id[0] : params.session_id;
 
-  return <PleaseSignIn>{id ? <Order id={id} /> : <p>Loading...</p>}</PleaseSignIn>;
+  return (
+    <PleaseSignIn>
+      {id || sessionId ? <Order id={id} sessionId={sessionId} /> : <p>Loading...</p>}
+    </PleaseSignIn>
+  );
 }

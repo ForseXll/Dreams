@@ -9,6 +9,10 @@ type CreateOrderInput = paths['/api/orders']['post']['requestBody']['content']['
 type CreateOrderResponse = paths['/api/orders']['post']['responses'][200]['content']['application/json'];
 type CreateCheckoutSessionResponse =
   paths['/api/orders/create-checkout-session']['post']['responses'][200]['content']['application/json'];
+type CompleteCheckoutSessionInput =
+  paths['/api/orders/checkout/complete']['post']['requestBody']['content']['application/json'];
+type CompleteCheckoutSessionResponse =
+  paths['/api/orders/checkout/complete']['post']['responses'][200]['content']['application/json'];
 
 export function listOrders() {
   return apiClient.get<ListOrdersResponse>('/api/orders').then((result) => normalizeOrders(result));
@@ -26,6 +30,12 @@ export function createCheckoutSession() {
   return apiClient
     .post<CreateCheckoutSessionResponse>('/api/orders/create-checkout-session')
     .then((result) => normalizeCheckoutSession(result));
+}
+
+export function completeCheckoutSession(input: CompleteCheckoutSessionInput) {
+  return apiClient
+    .post<CompleteCheckoutSessionResponse>('/api/orders/checkout/complete', input)
+    .then((result) => normalizeOrder(result));
 }
 
 export type { CheckoutSession, Order, SingleOrder };

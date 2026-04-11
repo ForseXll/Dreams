@@ -12,6 +12,7 @@
     "lint:fix": "pnpm --filter frontend lint:fix && pnpm --filter backend lint:fix",
     "typecheck": "pnpm --filter frontend typecheck && pnpm --filter backend typecheck",
     "db:push": "pnpm --filter backend db:push",
+    "db:seed": "pnpm --filter backend db:seed",
     "api:sync": "pnpm --filter backend openapi:export && pnpm --filter frontend api:types"
   },
   "engines": {

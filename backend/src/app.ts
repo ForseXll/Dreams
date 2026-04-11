@@ -2,12 +2,14 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import cookie from '@fastify/cookie';
 import jwt from '@fastify/jwt';
+import multipart from '@fastify/multipart';
 import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
 import { authRoutes } from './routes/auth';
 import { itemRoutes } from './routes/items';
 import { cartRoutes } from './routes/cart';
 import { orderRoutes } from './routes/orders';
+import { uploadRoutes } from './routes/uploads';
 import { userRoutes } from './routes/users';
 import { createFastifyLoggerOptions, logger as appLogger } from './logger/logger-provider';
 
@@ -40,6 +42,7 @@ export async function createApp(opts: CreateAppOptions = {}) {
   });
 
   await fastify.register(cookie);
+  await fastify.register(multipart);
 
   await fastify.register(jwt, {
     secret: process.env.JWT_SECRET || 'development-secret-change-in-production',
@@ -93,6 +96,7 @@ export async function createApp(opts: CreateAppOptions = {}) {
   fastify.register(itemRoutes, { prefix: '/api' });
   fastify.register(cartRoutes, { prefix: '/api' });
   fastify.register(orderRoutes, { prefix: '/api' });
+  fastify.register(uploadRoutes, { prefix: '/api' });
   fastify.register(userRoutes, { prefix: '/api' });
 
   fastify.get('/health', async () => {

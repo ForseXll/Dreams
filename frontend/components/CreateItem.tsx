@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ErrorMessage from './ErrorMessage';
 import Form from './styles/Form';
-import { createItem } from '../lib/api';
+import { createItem, uploadImageToCloudinary } from '../lib/api';
 
 export default function CreateItem() {
   const router = useRouter();
@@ -23,18 +23,17 @@ export default function CreateItem() {
       return;
     }
 
-    const data = new FormData();
-    data.append('file', files[0]);
-    data.append('upload_preset', 'Shopping');
+    setLoading(true);
 
-    const response = await fetch('https://api.cloudinary.com/v1_1/dmgrjhxb7/image/upload', {
-      method: 'POST',
-      body: data,
-    });
-    const file = await response.json();
-
-    setImage(file.secure_url);
-    setLargeImage(file.eager && file.eager[0] ? file.eager[0].secure_url : file.secure_url);
+    try {
+      const uploaded = await uploadImageToCloudinary(files[0]);
+      setImage(uploaded.image);
+      setLargeImage(uploaded.largeImage);
+    } catch (nextError) {
+      setError(nextError as Error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

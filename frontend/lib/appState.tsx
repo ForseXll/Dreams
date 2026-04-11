@@ -36,14 +36,35 @@ function getCartCount(cart: CartItem[]) {
   return cart.reduce((total, cartItem) => total + cartItem.quantity, 0);
 }
 
+function samePermissions(left: CurrentUser['permissions'], right: CurrentUser['permissions']) {
+  return left.length === right.length && left.every((permission, index) => permission === right[index]);
+}
+
+function sameUser(left: CurrentUser | null, right: CurrentUser | null) {
+  if (left === right) {
+    return true;
+  }
+
+  if (!left || !right) {
+    return false;
+  }
+
+  return (
+    left.id === right.id &&
+    left.email === right.email &&
+    left.name === right.name &&
+    samePermissions(left.permissions, right.permissions)
+  );
+}
+
 function useAppStateValue(): AppContextValue {
   const [bootstrapping, setBootstrapping] = useState(true);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
-  const refreshCart = useCallback(async () => {
-    if (!currentUser) {
+  const loadCart = useCallback(async (user: CurrentUser | null) => {
+    if (!user?.id) {
       setCart([]);
       return null;
     }
@@ -61,12 +82,14 @@ function useAppStateValue(): AppContextValue {
 
       throw error;
     }
-  }, [currentUser]);
+  }, []);
+
+  const refreshCart = useCallback(async () => loadCart(currentUser), [currentUser?.id, loadCart]);
 
   const refreshSession = useCallback(async () => {
     try {
       const user = await getCurrentUser();
-      setCurrentUser(user);
+      setCurrentUser((previousUser) => (sameUser(previousUser, user) ? previousUser : user));
       return user;
     } catch (error) {
       if (
@@ -75,7 +98,7 @@ function useAppStateValue(): AppContextValue {
         'status' in error &&
         (error.status === 401 || error.status === 404)
       ) {
-        setCurrentUser(null);
+        setCurrentUser((previousUser) => (previousUser ? null : previousUser));
         setCart([]);
         return null;
       }
@@ -92,7 +115,7 @@ function useAppStateValue(): AppContextValue {
         const user = await refreshSession();
 
         if (active && user) {
-          await refreshCart();
+          await loadCart(user);
         }
       } finally {
         if (active) {
@@ -106,7 +129,7 @@ function useAppStateValue(): AppContextValue {
     return () => {
       active = false;
     };
-  }, [refreshCart, refreshSession]);
+  }, [loadCart, refreshSession]);
 
   useEffect(() => {
     if (!bootstrapping && currentUser) {

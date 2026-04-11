@@ -1,16 +1,8 @@
 import { eq } from 'drizzle-orm';
 import { db } from '../db/index';
+import { SYSTEM_PERMISSION_NAMES } from '../db/permissions';
 import { permissions, userPermissions, users } from '../db/schema';
 import { authMiddleware, requirePermission } from '../middleware/auth';
-
-const POSSIBLE_PERMISSIONS = [
-  'ADMIN',
-  'USER',
-  'ITEMCREATE',
-  'ITEMUPDATE',
-  'ITEMDELETE',
-  'PERMISSIONUPDATE',
-];
 
 async function getUserPermissions(userId: number) {
   const rows = await db
@@ -105,7 +97,7 @@ export async function userRoutes(fastify) {
             type: 'array',
             items: {
               type: 'string',
-              enum: POSSIBLE_PERMISSIONS,
+              enum: SYSTEM_PERMISSION_NAMES,
             },
           },
         },
@@ -151,7 +143,7 @@ export async function userRoutes(fastify) {
     }
 
     const requestedPermissions = Array.isArray(request.body?.permissions)
-      ? request.body.permissions.filter((permission) => POSSIBLE_PERMISSIONS.includes(permission))
+      ? request.body.permissions.filter((permission) => SYSTEM_PERMISSION_NAMES.includes(permission))
       : [];
 
     await syncPermissions(id, requestedPermissions);
