@@ -3,7 +3,16 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ErrorMessage from './ErrorMessage';
-import { fieldsetClass, formClass, inputClass, primaryButtonClass } from '../lib/ui';
+import {
+  fieldsetClass,
+  formClass,
+  formHeadingClass,
+  formHelperClass,
+  formLabelClass,
+  formStatusClass,
+  inputClass,
+  primaryButtonClass,
+} from '../lib/ui';
 import { useAppState } from '../lib/appState';
 
 export default function SignUp() {
@@ -37,42 +46,48 @@ export default function SignUp() {
   return (
     <form className={formClass} method="post" onSubmit={handleSubmit}>
       <fieldset className={fieldsetClass} disabled={loading} aria-busy={loading}>
-        <h2 className="m-0 text-[2.2rem] font-bold tracking-[-0.03em]">Sign Up for an Account</h2>
+        <div className="space-y-2">
+          <h2 className={formHeadingClass}>Create an account</h2>
+          <p className={formHelperClass}>Set up a standard storefront account with your name, email, and password.</p>
+        </div>
         <ErrorMessage error={error || undefined} />
-        <label htmlFor="email">
+        {loading ? <p className={formStatusClass}>Creating your account and preparing the storefront.</p> : null}
+        <label className={formLabelClass} htmlFor="email">
           Email
           <input
             className={inputClass}
             type="email"
             name="email"
-            placeholder="email"
+            placeholder="you@example.com"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
         </label>
-        <label htmlFor="name">
+        <label className={formLabelClass} htmlFor="name">
           Name
           <input
             className={inputClass}
             type="text"
             name="name"
-            placeholder="name"
+            placeholder="Your name"
             value={name}
             onChange={(event) => setName(event.target.value)}
           />
         </label>
-        <label htmlFor="password">
+        <label className={formLabelClass} htmlFor="password">
           Password
           <input
             className={inputClass}
             type="password"
             name="password"
-            placeholder="password"
+            placeholder="Create a password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
         </label>
-        <button className={primaryButtonClass} type="submit">Sign Up!</button>
+        <div className="pt-2">
+          <button className={primaryButtonClass} type="submit">{loading ? 'Creating account...' : 'Create account'}</button>
+        </div>
       </fieldset>
     </form>
   );

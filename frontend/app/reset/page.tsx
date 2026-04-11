@@ -1,4 +1,5 @@
 import Reset from '../../components/Reset';
+import StateMessage from '../../components/StateMessage';
 
 export default async function ResetPage({
   searchParams,
@@ -9,5 +10,13 @@ export default async function ResetPage({
   const tokenValue = params.token || params.resetToken;
   const token = Array.isArray(tokenValue) ? tokenValue[0] : tokenValue;
 
-  return token ? <Reset resetToken={token} /> : <p>Loading...</p>;
+  return token ? (
+    <Reset resetToken={token} />
+  ) : (
+    <StateMessage
+      title="Waiting for reset token"
+      description="Open the reset link from your email to load the password reset form."
+      tone="muted"
+    />
+  );
 }

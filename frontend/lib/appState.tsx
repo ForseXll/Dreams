@@ -84,7 +84,7 @@ function useAppStateValue(): AppContextValue {
     }
   }, []);
 
-  const refreshCart = useCallback(async () => loadCart(currentUser), [currentUser?.id, loadCart]);
+  const refreshCart = useCallback(async () => loadCart(currentUser), [currentUser, loadCart]);
 
   const refreshSession = useCallback(async () => {
     try {

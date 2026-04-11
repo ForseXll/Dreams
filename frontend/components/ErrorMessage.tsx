@@ -27,7 +27,7 @@ export default function ErrorMessage({ error }: { error?: ErrorLike }) {
             key={index}
           >
             <p className="m-0 font-normal" data-test="request-error">
-              <strong className="mr-4">Shoot!</strong>
+              <strong className="mr-4">There was a problem.</strong>
               {cleanMessage(networkError.message)}
             </p>
           </div>
@@ -39,7 +39,7 @@ export default function ErrorMessage({ error }: { error?: ErrorLike }) {
   return (
     <div className="my-4 border border-black/5 border-l-[5px] border-l-[var(--color-text)] bg-white p-5">
       <p className="m-0 font-normal" data-test="request-error">
-        <strong className="mr-4">Shoot!</strong>
+        <strong className="mr-4">There was a problem.</strong>
         {cleanMessage(error.message)}
       </p>
     </div>

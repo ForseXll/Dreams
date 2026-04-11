@@ -10,7 +10,7 @@ interface AddToCartProps {
   id: number | string;
 }
 
-export default function AddToCart({ className, id }: AddToCartProps) {
+export default function AddToCart({ children, className, id }: AddToCartProps) {
   const app = useAppState();
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(false);
@@ -31,7 +31,7 @@ export default function AddToCart({ className, id }: AddToCartProps) {
     <>
       <Error error={error || undefined} />
       <button className={className} onClick={handleClick} disabled={loading}>
-        Add{loading ? 'ing' : ''} to Cart
+        {loading ? 'Adding…' : children || 'Add to Cart'}
       </button>
     </>
   );

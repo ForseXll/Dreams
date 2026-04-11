@@ -3,7 +3,16 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ErrorMessage from './ErrorMessage';
-import { fieldsetClass, formClass, inputClass, primaryButtonClass } from '../lib/ui';
+import {
+  fieldsetClass,
+  formClass,
+  formHeadingClass,
+  formHelperClass,
+  formLabelClass,
+  formStatusClass,
+  inputClass,
+  primaryButtonClass,
+} from '../lib/ui';
 import { useAppState } from '../lib/appState';
 
 export default function SignIn() {
@@ -35,31 +44,37 @@ export default function SignIn() {
   return (
     <form className={formClass} method="post" onSubmit={handleSubmit}>
       <fieldset className={fieldsetClass} disabled={loading} aria-busy={loading}>
-        <h2 className="m-0 text-[2.2rem] font-bold tracking-[-0.03em]">Sign In to your Account</h2>
+        <div className="space-y-2">
+          <h2 className={formHeadingClass}>Sign in</h2>
+          <p className={formHelperClass}>Use the email and password tied to your storefront account.</p>
+        </div>
         <ErrorMessage error={error || undefined} />
-        <label htmlFor="email">
+        {loading ? <p className={formStatusClass}>Signing you in and loading your account.</p> : null}
+        <label className={formLabelClass} htmlFor="email">
           Email
           <input
             className={inputClass}
             type="email"
             name="email"
-            placeholder="email"
+            placeholder="you@example.com"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
         </label>
-        <label htmlFor="password">
+        <label className={formLabelClass} htmlFor="password">
           Password
           <input
             className={inputClass}
             type="password"
             name="password"
-            placeholder="password"
+            placeholder="Enter your password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
         </label>
-        <button className={primaryButtonClass} type="submit">Sign In!</button>
+        <div className="pt-2">
+          <button className={primaryButtonClass} type="submit">{loading ? 'Signing in...' : 'Sign in'}</button>
+        </div>
       </fieldset>
     </form>
   );

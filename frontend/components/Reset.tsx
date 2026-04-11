@@ -3,7 +3,16 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ErrorMessage from './ErrorMessage';
-import { fieldsetClass, formClass, inputClass, primaryButtonClass } from '../lib/ui';
+import {
+  fieldsetClass,
+  formClass,
+  formHeadingClass,
+  formHelperClass,
+  formLabelClass,
+  formStatusClass,
+  inputClass,
+  primaryButtonClass,
+} from '../lib/ui';
 import { resetPassword } from '../lib/api';
 
 interface ResetProps {
@@ -42,31 +51,37 @@ export default function Reset({ resetToken }: ResetProps) {
   return (
     <form className={formClass} method="post" onSubmit={handleSubmit}>
       <fieldset className={fieldsetClass} disabled={loading} aria-busy={loading}>
-        <h2 className="m-0 text-[2.2rem] font-bold tracking-[-0.03em]">Reset Your Password</h2>
+        <div className="space-y-2">
+          <h2 className={formHeadingClass}>Choose a new password</h2>
+          <p className={formHelperClass}>Enter the new password twice so we can confirm the reset.</p>
+        </div>
         <ErrorMessage error={error || undefined} />
-        <label htmlFor="password">
+        {loading ? <p className={formStatusClass}>Saving your new password.</p> : null}
+        <label className={formLabelClass} htmlFor="password">
           Password
           <input
             className={inputClass}
             type="password"
             name="password"
-            placeholder="password"
+            placeholder="Enter a new password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
         </label>
-        <label htmlFor="confirmPassword">
+        <label className={formLabelClass} htmlFor="confirmPassword">
           Confirm Your Password
           <input
             className={inputClass}
             type="password"
             name="confirmPassword"
-            placeholder="confirmPassword"
+            placeholder="Re-enter the new password"
             value={confirmPassword}
             onChange={(event) => setConfirmPassword(event.target.value)}
           />
         </label>
-        <button className={primaryButtonClass} type="submit">Reset Password!</button>
+        <div className="pt-2">
+          <button className={primaryButtonClass} type="submit">{loading ? 'Saving password...' : 'Save new password'}</button>
+        </div>
       </fieldset>
     </form>
   );

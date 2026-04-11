@@ -6,7 +6,7 @@ import SignUp from '../../components/SignUp';
 
 export default function SignupPage() {
   return (
-    <div className="grid gap-5 md:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
+    <div className="grid gap-5 md:grid-cols-[repeat(auto-fit,minmax(300px,1fr))] md:items-start">
       <SignUp />
       <SignIn />
       <RequestReset />

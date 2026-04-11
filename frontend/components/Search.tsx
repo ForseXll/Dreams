@@ -1,6 +1,7 @@
 'use client';
 
 import debounce from 'lodash.debounce';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Item } from '../lib/api/types';
@@ -14,11 +15,14 @@ export default function Search() {
   const [isOpen, setIsOpen] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(false);
+  const trimmedValue = inputValue.trim();
 
   const runSearch = useMemo(
     () =>
       debounce(async (searchTerm: string) => {
-        if (!searchTerm) {
+        const nextTerm = searchTerm.trim();
+
+        if (!nextTerm) {
           setItems([]);
           setHighlightedIndex(-1);
           setLoading(false);
@@ -28,7 +32,7 @@ export default function Search() {
         setLoading(true);
 
         try {
-          const response = await listItems({ search: searchTerm, take: 5 });
+          const response = await listItems({ search: nextTerm, take: 5 });
           setItems(response.items);
           setHighlightedIndex(response.items.length ? 0 : -1);
           setIsOpen(true);
@@ -61,6 +65,11 @@ export default function Search() {
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Escape') {
+      setIsOpen(false);
+      return;
+    }
+
     if (!isOpen || !items.length) {
       return;
     }
@@ -80,19 +89,19 @@ export default function Search() {
       handleSelect(items[highlightedIndex]);
     }
 
-    if (event.key === 'Escape') {
-      setIsOpen(false);
-    }
   };
 
   return (
-    <div className="relative" ref={containerRef}>
+    <div className="relative mx-auto w-full max-w-[720px]" ref={containerRef}>
       <div className="relative">
+        <span className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-[1.25rem] text-[var(--color-muted)] sm:text-[1.4rem]">
+          Search
+        </span>
         <input
           type="search"
-          placeholder="Search for Item"
+          placeholder="Search items"
           id="search"
-          className={`w-full border-0 bg-transparent px-6 py-4 text-[1.6rem] outline-none placeholder:text-[var(--color-muted)] ${loading ? 'animate-pulse' : ''}`}
+          className={`h-11 w-full rounded-lg border border-[var(--color-border)] bg-white pr-4 pl-18 text-[1.4rem] outline-none transition placeholder:text-[var(--color-muted)] focus:border-[var(--color-text)] sm:h-12 sm:pl-20 sm:text-[1.5rem] ${loading ? 'animate-pulse' : ''}`}
           value={inputValue}
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
@@ -103,23 +112,53 @@ export default function Search() {
           }}
         />
         {isOpen ? (
-          <div className="absolute left-0 top-full z-[2] w-full rounded-b-[10px] border border-[var(--color-border)] bg-white shadow-[0_10px_30px_rgba(27,24,22,0.08)]">
+          <div className="absolute left-0 top-[calc(100%+0.8rem)] z-[2] w-full overflow-hidden rounded-[10px] border border-[var(--color-border)] bg-white shadow-[0_10px_30px_rgba(27,24,22,0.08)]" role="listbox">
+            {!trimmedValue && !loading ? (
+              <div className="px-4 py-3 text-[1.3rem] text-[var(--color-muted)] sm:text-[1.4rem]">
+                Start typing to search the catalog.
+              </div>
+            ) : null}
+            {loading ? (
+              <div className="px-4 py-3 text-[1.3rem] text-[var(--color-muted)] sm:text-[1.4rem]">
+                Searching items...
+              </div>
+            ) : null}
             {items.map((item, index) => (
               <div
-                className={`flex items-center gap-3 border-b border-[var(--color-border)] px-4 py-3 text-[1.4rem] transition-colors last:border-b-0 ${index === highlightedIndex ? 'bg-[var(--color-surface-alt)] pl-6' : 'bg-white'}`}
+                className={`flex items-center gap-3 border-b border-[var(--color-border)] px-4 py-3 text-[1.3rem] transition-colors last:border-b-0 sm:text-[1.4rem] ${index === highlightedIndex ? 'bg-[var(--color-surface-alt)] pl-5 sm:pl-6' : 'bg-white'}`}
                 key={item.id}
+                role="option"
+                aria-selected={index === highlightedIndex}
                 onMouseEnter={() => setHighlightedIndex(index)}
                 onMouseDown={(event) => {
                   event.preventDefault();
                   handleSelect(item);
                 }}
               >
-                <img className="h-12 w-12 object-cover" src={item.image} alt={item.title} width="50" />
-                {item.title}
+                {item.image ? (
+                  <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md sm:h-12 sm:w-12">
+                    <Image
+                      className="object-cover"
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      sizes="48px"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-[var(--color-surface-alt)] text-[1.1rem] text-[var(--color-muted)] sm:h-12 sm:w-12">
+                    N/A
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <div className="truncate font-semibold text-[var(--color-text)]">{item.title}</div>
+                </div>
               </div>
             ))}
-            {!items.length && !loading ? (
-              <div className="px-4 py-3 text-[1.4rem] text-[var(--color-muted)]">Nothing Found for "{inputValue}"</div>
+            {trimmedValue && !items.length && !loading ? (
+              <div className="px-4 py-3 text-[1.3rem] text-[var(--color-muted)] sm:text-[1.4rem]">
+                No items match &quot;{trimmedValue}&quot;.
+              </div>
             ) : null}
           </div>
         ) : null}

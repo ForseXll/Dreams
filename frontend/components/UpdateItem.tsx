@@ -3,7 +3,17 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ErrorMessage from './ErrorMessage';
-import { fieldsetClass, formClass, inputClass, primaryButtonClass } from '../lib/ui';
+import StateMessage from './StateMessage';
+import {
+  fieldsetClass,
+  formClass,
+  formHeadingClass,
+  formHelperClass,
+  formLabelClass,
+  formStatusClass,
+  inputClass,
+  primaryButtonClass,
+} from '../lib/ui';
 import { getItem, updateItem } from '../lib/api';
 
 interface UpdateItemProps {
@@ -70,14 +80,26 @@ export default function UpdateItem({ id }: UpdateItemProps) {
   };
 
   if (itemLoading) {
-    return <p>Loading...</p>;
+    return (
+      <StateMessage
+        title="Loading item"
+        description="Retrieving the current item fields before editing."
+        tone="muted"
+      />
+    );
   }
 
   return (
     <form className={formClass} onSubmit={handleSubmit}>
       <ErrorMessage error={error || undefined} />
       <fieldset className={fieldsetClass} disabled={loading} aria-busy={loading}>
-        <label htmlFor="title">
+        <div className="space-y-2">
+          <h2 className={formHeadingClass}>Update Item</h2>
+          <p className={formHelperClass}>Adjust the title, price, or description and keep the current item listing in place.</p>
+        </div>
+        {loading ? <p className={formStatusClass}>Saving your item changes.</p> : null}
+
+        <label className={formLabelClass} htmlFor="title">
           Title
           <input
             className={inputClass}
@@ -91,7 +113,7 @@ export default function UpdateItem({ id }: UpdateItemProps) {
           />
         </label>
 
-        <label htmlFor="price">
+        <label className={formLabelClass} htmlFor="price">
           Price
           <input
             className={inputClass}
@@ -105,7 +127,7 @@ export default function UpdateItem({ id }: UpdateItemProps) {
           />
         </label>
 
-        <label htmlFor="description">
+        <label className={formLabelClass} htmlFor="description">
           Description
           <textarea
             className={`${inputClass} min-h-48 resize-y`}
@@ -117,7 +139,9 @@ export default function UpdateItem({ id }: UpdateItemProps) {
             onChange={(event) => setDescription(event.target.value)}
           />
         </label>
-        <button className={primaryButtonClass} type="submit">Sav{loading ? 'ing' : 'e'} Changes</button>
+        <div className="pt-2">
+          <button className={primaryButtonClass} type="submit">{loading ? 'Saving changes...' : 'Save changes'}</button>
+        </div>
       </fieldset>
     </form>
   );

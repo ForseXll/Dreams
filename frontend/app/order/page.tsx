@@ -1,5 +1,6 @@
 import Order from '../../components/Order';
 import PleaseSignIn from '../../components/PleaseSignIn';
+import StateMessage from '../../components/StateMessage';
 
 export default async function OrderPage({
   searchParams,
@@ -12,7 +13,15 @@ export default async function OrderPage({
 
   return (
     <PleaseSignIn>
-      {id || sessionId ? <Order id={id} sessionId={sessionId} /> : <p>Loading...</p>}
+      {id || sessionId ? (
+        <Order id={id} sessionId={sessionId} />
+      ) : (
+        <StateMessage
+          title="Waiting for order details"
+          description="This page needs an order id or checkout session id before it can load the order summary."
+          tone="muted"
+        />
+      )}
     </PleaseSignIn>
   );
 }
