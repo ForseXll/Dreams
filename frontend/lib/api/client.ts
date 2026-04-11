@@ -65,12 +65,24 @@ export async function apiRequest<TResponse>(
     headers['Content-Type'] = 'application/json';
   }
 
-  const response = await fetch(url, {
-    method,
-    credentials: 'include',
-    headers,
-    body: getBody(method, options.body),
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(url, {
+      method,
+      credentials: 'include',
+      headers,
+      body: getBody(method, options.body),
+    });
+  } catch (error) {
+    throw new ApiError(
+      `Unable to reach the API at ${url}. Check that the backend is running and that NEXT_PUBLIC_API_URL is correct.`,
+      {
+        details: error,
+        url,
+      }
+    );
+  }
 
   const payload = await parseResponseBody<TResponse & { code?: string; details?: unknown; error?: string; message?: string }>(response);
 

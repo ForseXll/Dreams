@@ -1,7 +1,9 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { motion } from 'framer-motion';
 import Header from './Header';
+import { pageClass, containerClass } from '../lib/ui';
 
 interface PageProps {
   children: ReactNode;
@@ -9,11 +11,16 @@ interface PageProps {
 
 export default function Page({ children }: PageProps) {
   return (
-    <div className="min-h-screen text-[var(--color-text)]">
+    <div className={pageClass}>
       <Header />
-      <main className="mx-auto flex w-full max-w-[1200px] flex-col gap-8 px-4 py-6 sm:px-6 sm:py-8 lg:py-10">
+      <motion.main 
+        className={`${containerClass} py-8 sm:py-10 lg:py-12`}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
         {children}
-      </main>
+      </motion.main>
     </div>
   );
 }

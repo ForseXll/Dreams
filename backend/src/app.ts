@@ -39,6 +39,8 @@ export async function createApp(opts: CreateAppOptions = {}) {
       callback(new Error('Origin not allowed'), false);
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   await fastify.register(cookie);

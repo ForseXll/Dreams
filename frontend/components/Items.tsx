@@ -1,16 +1,48 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { perPage } from '../config';
 import type { Item as ItemType } from '../lib/api/types';
 import { listItems } from '../lib/api';
 import Item from './Item';
 import Pagination from './Pagination';
+import { cardVariants, skeletonClass, typographyClasses, cn } from '../lib/ui';
+import StateMessage from './StateMessage';
 
 interface ItemsProps {
   page: number;
   description?: string;
   title?: string;
+}
+
+// Skeleton card component
+function ItemSkeleton({ index }: { index: number }) {
+  return (
+    <motion.div
+      className={cn(
+        cardVariants({ variant: "default" }),
+        "flex h-full flex-col overflow-hidden"
+      )}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
+    >
+      <div className={cn(skeletonClass, "h-[300px] w-full border-b border-[var(--color-border)]")} />
+      <div className="flex flex-1 flex-col px-6 pt-6 pb-5 space-y-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className={cn(skeletonClass, "h-16 w-3/4")} />
+          <div className={cn(skeletonClass, "h-8 w-20")} />
+        </div>
+        <div className={cn(skeletonClass, "h-20 w-full")} />
+      </div>
+      <div className="grid w-full grid-cols-3 gap-2 border-t border-[var(--color-border)] px-5 py-4">
+        <div className={cn(skeletonClass, "h-10 w-full")} />
+        <div className={cn(skeletonClass, "h-10 w-full")} />
+        <div className={cn(skeletonClass, "h-10 w-full")} />
+      </div>
+    </motion.div>
+  );
 }
 
 export default function Items({ page, description, title = 'Shop' }: ItemsProps) {
@@ -57,13 +89,33 @@ export default function Items({ page, description, title = 'Shop' }: ItemsProps)
 
   if (loading) {
     return (
-      <section className="grid gap-6">
-        <div className="space-y-2">
-          <h1 className="m-0 text-[3.2rem] font-bold tracking-[-0.04em]">{title}</h1>
-          {description ? <p className="m-0 max-w-[56rem] text-[1.5rem] leading-[1.7] text-[var(--color-muted)]">{description}</p> : null}
+      <section className="grid gap-8">
+        {/* Header */}
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+          <div className="space-y-2">
+            <h1 className={cn(typographyClasses.h1)}>{title}</h1>
+            {description ? (
+              <p className={cn(typographyClasses.body, typographyClasses.muted, "max-w-[56rem]")}>
+                {description}
+              </p>
+            ) : null}
+          </div>
+          <div className="flex gap-3">
+            <div className={cn(skeletonClass, "h-12 w-32")} />
+            <div className={cn(skeletonClass, "h-12 w-32")} />
+          </div>
         </div>
-        <div className="rounded-[10px] border border-[var(--color-border)] bg-white px-5 py-4 text-[1.5rem] text-[var(--color-muted)]">
-          Loading items...
+
+        {/* Pagination Skeleton */}
+        <div className="flex justify-center lg:justify-end">
+          <div className={cn(skeletonClass, "h-12 w-48")} />
+        </div>
+
+        {/* Items Grid Skeleton */}
+        <div className="mx-auto grid w-full max-w-[1200px] gap-6 md:grid-cols-2">
+          {Array.from({ length: perPage }).map((_, i) => (
+            <ItemSkeleton key={i} index={i} />
+          ))}
         </div>
       </section>
     );
@@ -72,13 +124,11 @@ export default function Items({ page, description, title = 'Shop' }: ItemsProps)
   if (error) {
     return (
       <section className="grid gap-6">
-        <div className="space-y-2">
-          <h1 className="m-0 text-[3.2rem] font-bold tracking-[-0.04em]">{title}</h1>
-          {description ? <p className="m-0 max-w-[56rem] text-[1.5rem] leading-[1.7] text-[var(--color-muted)]">{description}</p> : null}
-        </div>
-        <div className="rounded-[10px] border border-[var(--color-border)] bg-white px-5 py-4 text-[1.5rem] text-[var(--color-danger)]">
-          Error loading items: {error.message}
-        </div>
+        <StateMessage
+          title="Error loading items"
+          description={error.message}
+          tone="danger"
+        />
       </section>
     );
   }
@@ -87,46 +137,92 @@ export default function Items({ page, description, title = 'Shop' }: ItemsProps)
 
   return (
     <section className="grid gap-8">
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+      {/* Header */}
+      <motion.div 
+        className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      >
         <div className="space-y-2">
-          <h1 className="m-0 text-[3.2rem] font-bold tracking-[-0.04em]">{title}</h1>
+          <h1 className={cn(typographyClasses.h1)}>{title}</h1>
           {description ? (
-            <p className="m-0 max-w-[56rem] text-[1.5rem] leading-[1.7] text-[var(--color-muted)]">
+            <p className={cn(typographyClasses.body, typographyClasses.muted, "max-w-[56rem]")}>
               {description}
             </p>
           ) : null}
         </div>
-        <div className="grid gap-3 sm:grid-cols-[auto_auto] lg:justify-self-end">
-          <div className="rounded-[10px] border border-[var(--color-border)] bg-white px-4 py-3 text-[1.35rem] text-[var(--color-muted)]">
-            <span className="font-semibold text-[var(--color-text)]">{total}</span> items
-          </div>
-          <div className="rounded-[10px] border border-[var(--color-border)] bg-white px-4 py-3 text-[1.35rem] text-[var(--color-muted)]">
-            Page <span className="font-semibold text-[var(--color-text)]">{page}</span> of{' '}
+        
+        <div className="flex gap-3 lg:justify-self-end">
+          <motion.div 
+            className={cn(
+              cardVariants({ variant: "default", size: "sm" }),
+              "flex items-center gap-2"
+            )}
+            whileHover={{ scale: 1.02 }}
+          >
+            <span className={cn(typographyClasses.small, typographyClasses.muted)}>Items:</span>
+            <span className="font-semibold text-[var(--color-text)]">{total}</span>
+          </motion.div>
+          
+          <motion.div 
+            className={cn(
+              cardVariants({ variant: "default", size: "sm" }),
+              "flex items-center gap-2"
+            )}
+            whileHover={{ scale: 1.02 }}
+          >
+            <span className={cn(typographyClasses.small, typographyClasses.muted)}>Page:</span>
+            <span className="font-semibold text-[var(--color-text)]">{page}</span>
+            <span className={cn(typographyClasses.small, typographyClasses.muted)}>of</span>
             <span className="font-semibold text-[var(--color-text)]">{totalPages}</span>
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="flex justify-center lg:justify-end">
+      {/* Top Pagination */}
+      <motion.div 
+        className="flex justify-center lg:justify-end"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
         <Pagination page={page} count={total} />
-      </div>
+      </motion.div>
 
+      {/* Items Grid */}
       {items.length ? (
         <div className="mx-auto grid w-full max-w-[1200px] gap-6 md:grid-cols-2">
-          {items.map((item) => (
-            <Item item={item} key={item.id} />
+          {items.map((item, index) => (
+            <Item item={item} key={item.id} index={index} />
           ))}
         </div>
       ) : (
-        <div className="rounded-[10px] border border-dashed border-[var(--color-border)] bg-white px-6 py-10 text-[1.5rem] text-[var(--color-muted)]">
-          No items are available yet.
-        </div>
+        <motion.div 
+          className={cn(
+            cardVariants({ variant: "default" }),
+            "border-dashed px-6 py-10 text-center"
+          )}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <p className={cn(typographyClasses.body, typographyClasses.muted)}>
+            No items are available yet.
+          </p>
+        </motion.div>
       )}
 
+      {/* Bottom Pagination */}
       {items.length ? (
-        <div className="flex justify-center">
+        <motion.div 
+          className="flex justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
           <Pagination page={page} count={total} />
-        </div>
+        </motion.div>
       ) : null}
     </section>
   );
