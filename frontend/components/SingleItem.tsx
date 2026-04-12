@@ -75,7 +75,7 @@ export default function SingleItem({ id }: SingleItemProps) {
 
   if (loading) {
     return (
-      <div className={cn(cardVariants({ variant: "default" }), "mx-auto max-w-[1200px] overflow-hidden lg:grid lg:grid-cols-[minmax(0,1fr)_28rem]")}>
+      <div className={cn(cardVariants({ variant: "default" }), "mx-auto max-w-[1200px] overflow-hidden lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(22rem,28rem)]")}>
         <div className="bg-[var(--color-surface-alt)] p-4 sm:p-6 lg:border-r lg:border-[var(--color-border)]">
           <ImageSkeleton />
         </div>
@@ -115,7 +115,7 @@ export default function SingleItem({ id }: SingleItemProps) {
     <motion.div 
       className={cn(
         cardVariants({ variant: "default" }),
-        "mx-auto max-w-[1200px] overflow-hidden lg:grid lg:grid-cols-[minmax(0,1fr)_28rem]"
+"mx-auto max-w-[1200px] overflow-hidden lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(22rem,28rem)]"
       )}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -229,7 +229,7 @@ export default function SingleItem({ id }: SingleItemProps) {
           </motion.div>
           
           <motion.button 
-            className={cn(buttonVariants({ variant: "secondary", size: "lg" }), "w-full")} 
+            className={cn(buttonVariants({ variant: "secondary", size: "lg" }), "w-full whitespace-normal")} 
             type="button" 
             disabled
           >

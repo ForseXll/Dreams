@@ -7,6 +7,7 @@ import {
   logoutUser,
   registerUser,
   removeCartItem,
+  updateCartItem,
 } from './api';
 import type { Cart, CartItem, CurrentUser } from './api/types';
 
@@ -28,6 +29,7 @@ interface AppContextValue {
   register: (input: RegisterInput) => Promise<unknown>;
   removeFromCart: (cartItemId: number | string) => Promise<unknown>;
   toggleCart: () => void;
+  updateCartItemQuantity: (cartItemId: number | string, quantity: number) => Promise<unknown>;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -63,6 +65,22 @@ function useAppStateValue(): AppContextValue {
   const [cartOpen, setCartOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
+  function mergeCartItems(prev: CartItem[], next: CartItem[]): CartItem[] {
+    const nextById = new Map(next.map(item => [item.id, item]));
+    const result: CartItem[] = [];
+    for (const item of prev) {
+      const updated = nextById.get(item.id);
+      if (updated) {
+        result.push(updated);
+        nextById.delete(item.id);
+      }
+    }
+    for (const item of nextById.values()) {
+      result.push(item);
+    }
+    return result;
+  }
+
   const loadCart = useCallback(async (user: CurrentUser | null) => {
     if (!user?.id) {
       setCart([]);
@@ -72,7 +90,7 @@ function useAppStateValue(): AppContextValue {
     try {
       const cartResponse = await getCart();
       const nextCart = cartResponse.cartItems;
-      setCart(nextCart);
+      setCart((prev) => mergeCartItems(prev, nextCart));
       return cartResponse;
     } catch (error) {
       if (typeof error === 'object' && error && 'status' in error && error.status === 401) {
@@ -161,12 +179,22 @@ function useAppStateValue(): AppContextValue {
   const addToCart = useCallback(async (itemId: number | string) => {
     const result = await addItemToCart({ itemId: Number(itemId), quantity: 1 });
     await refreshCart();
-    setCartOpen(true);
     return result;
   }, [refreshCart]);
 
   const removeFromCart = useCallback(async (cartItemId: number | string) => {
     const result = await removeCartItem(cartItemId);
+    await refreshCart();
+    return result;
+  }, [refreshCart]);
+
+  const updateCartItemQuantity = useCallback(async (cartItemId: number | string, quantity: number) => {
+    if (quantity < 1) {
+      const result = await removeCartItem(cartItemId);
+      await refreshCart();
+      return result;
+    }
+    const result = await updateCartItem(cartItemId, { quantity });
     await refreshCart();
     return result;
   }, [refreshCart]);
@@ -195,6 +223,7 @@ function useAppStateValue(): AppContextValue {
       register,
       removeFromCart,
       toggleCart,
+      updateCartItemQuantity,
     }),
     [
       addToCart,
@@ -210,6 +239,7 @@ function useAppStateValue(): AppContextValue {
       register,
       removeFromCart,
       toggleCart,
+      updateCartItemQuantity,
     ]
   );
 }

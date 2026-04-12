@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 
 export default function Header() {
   return (
+    <>
     <motion.header 
       className={headerClass}
       initial={{ y: -100 }}
@@ -45,7 +46,8 @@ export default function Header() {
           <Search />
         </motion.div>
       </div>
+      </motion.header>
       <Cart />
-    </motion.header>
+    </>
   );
 }

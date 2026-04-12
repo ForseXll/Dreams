@@ -1,49 +1,49 @@
 @import "tailwindcss";
 
 :root {
-  /* OKLCH Color System - Better perceptual uniformity */
-  /* Primary Colors */
-  --color-primary: oklch(42% 0.12 35);
-  --color-primary-light: oklch(52% 0.1 35);
-  --color-primary-dark: oklch(32% 0.14 35);
+  /* OKLCH Color System - Modern Indigo/Violet palette */
+  /* Primary Colors - Deep indigo */
+  --color-primary: oklch(45% 0.18 270);
+  --color-primary-light: oklch(55% 0.16 270);
+  --color-primary-dark: oklch(35% 0.2 270);
   --color-primary-foreground: oklch(98% 0 0);
 
-  /* Accent Colors */
-  --color-accent: oklch(65% 0.15 80);
-  --color-accent-light: oklch(75% 0.12 80);
-  --color-accent-dark: oklch(55% 0.18 80);
-  --color-accent-foreground: oklch(25% 0.05 80);
+  /* Accent Colors - Vibrant violet */
+  --color-accent: oklch(62% 0.2 290);
+  --color-accent-light: oklch(72% 0.16 290);
+  --color-accent-dark: oklch(52% 0.22 290);
+  --color-accent-foreground: oklch(98% 0.01 290);
 
-  /* Neutral Colors */
-  --color-text: oklch(25% 0.02 60);
-  --color-text-muted: oklch(50% 0.03 60);
-  --color-text-subtle: oklch(65% 0.02 60);
+  /* Neutral Colors - Cool gray */
+  --color-text: oklch(22% 0.02 270);
+  --color-text-muted: oklch(48% 0.02 270);
+  --color-text-subtle: oklch(62% 0.02 270);
 
-  /* Surface Colors */
-  --color-surface: oklch(98% 0.01 80);
-  --color-surface-alt: oklch(94% 0.02 80);
+  /* Surface Colors - Cool-tinted whites */
+  --color-surface: oklch(98% 0.005 270);
+  --color-surface-alt: oklch(94% 0.01 270);
   --color-surface-elevated: oklch(100% 0 0);
 
   /* Border Colors */
-  --color-border: oklch(85% 0.02 80);
-  --color-border-strong: oklch(75% 0.03 80);
+  --color-border: oklch(86% 0.01 270);
+  --color-border-strong: oklch(74% 0.02 270);
 
-  /* Semantic Colors - Success, Warning, Danger, Info */
-  --color-success: oklch(65% 0.18 145);
-  --color-success-light: oklch(92% 0.05 145);
-  --color-success-foreground: oklch(25% 0.05 145);
+  /* Semantic Colors */
+  --color-success: oklch(60% 0.18 155);
+  --color-success-light: oklch(93% 0.04 155);
+  --color-success-foreground: oklch(25% 0.06 155);
 
-  --color-warning: oklch(75% 0.18 85);
-  --color-warning-light: oklch(94% 0.05 85);
-  --color-warning-foreground: oklch(30% 0.05 85);
+  --color-warning: oklch(72% 0.16 75);
+  --color-warning-light: oklch(94% 0.04 75);
+  --color-warning-foreground: oklch(28% 0.05 75);
 
-  --color-danger: oklch(55% 0.2 25);
-  --color-danger-light: oklch(88% 0.05 25);
+  --color-danger: oklch(55% 0.22 25);
+  --color-danger-light: oklch(90% 0.04 25);
   --color-danger-foreground: oklch(98% 0.01 25);
 
-  --color-info: oklch(65% 0.15 255);
-  --color-info-light: oklch(92% 0.05 255);
-  --color-info-foreground: oklch(25% 0.05 255);
+  --color-info: oklch(60% 0.16 255);
+  --color-info-light: oklch(93% 0.04 255);
+  --color-info-foreground: oklch(28% 0.06 255);
 
   /* Radius tokens */
   --radius-sm: 0.5rem;
@@ -68,93 +68,93 @@
 /* Dark Mode */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-primary: oklch(65% 0.12 35);
-    --color-primary-light: oklch(75% 0.1 35);
-    --color-primary-dark: oklch(55% 0.14 35);
-    --color-primary-foreground: oklch(15% 0.02 35);
+    --color-primary: oklch(65% 0.18 270);
+    --color-primary-light: oklch(72% 0.14 270);
+    --color-primary-dark: oklch(55% 0.2 270);
+    --color-primary-foreground: oklch(12% 0.03 270);
 
-    --color-accent: oklch(70% 0.15 80);
-    --color-accent-light: oklch(80% 0.12 80);
-    --color-accent-dark: oklch(60% 0.18 80);
-    --color-accent-foreground: oklch(20% 0.05 80);
+    --color-accent: oklch(72% 0.18 290);
+    --color-accent-light: oklch(80% 0.14 290);
+    --color-accent-dark: oklch(60% 0.22 290);
+    --color-accent-foreground: oklch(12% 0.03 290);
 
-    --color-text: oklch(92% 0.02 60);
-    --color-text-muted: oklch(70% 0.03 60);
-    --color-text-subtle: oklch(55% 0.02 60);
+    --color-text: oklch(92% 0.015 270);
+    --color-text-muted: oklch(68% 0.02 270);
+    --color-text-subtle: oklch(54% 0.015 270);
 
-    --color-surface: oklch(18% 0.01 80);
-    --color-surface-alt: oklch(22% 0.02 80);
-    --color-surface-elevated: oklch(25% 0.02 80);
+    --color-surface: oklch(16% 0.015 270);
+    --color-surface-alt: oklch(21% 0.018 270);
+    --color-surface-elevated: oklch(24% 0.018 270);
 
-    --color-border: oklch(30% 0.02 80);
-    --color-border-strong: oklch(40% 0.03 80);
+    --color-border: oklch(30% 0.02 270);
+    --color-border-strong: oklch(40% 0.025 270);
 
-    --color-success: oklch(70% 0.18 145);
-    --color-success-light: oklch(25% 0.05 145);
-    --color-success-foreground: oklch(92% 0.01 145);
+    --color-success: oklch(68% 0.18 155);
+    --color-success-light: oklch(24% 0.06 155);
+    --color-success-foreground: oklch(92% 0.01 155);
 
-    --color-warning: oklch(80% 0.18 85);
-    --color-warning-light: oklch(25% 0.05 85);
-    --color-warning-foreground: oklch(20% 0.05 85);
+    --color-warning: oklch(75% 0.16 75);
+    --color-warning-light: oklch(24% 0.05 75);
+    --color-warning-foreground: oklch(16% 0.04 75);
 
-    --color-danger: oklch(65% 0.2 25);
-    --color-danger-light: oklch(22% 0.05 25);
+    --color-danger: oklch(62% 0.22 25);
+    --color-danger-light: oklch(22% 0.06 25);
     --color-danger-foreground: oklch(95% 0.01 25);
 
-    --color-info: oklch(70% 0.15 255);
-    --color-info-light: oklch(25% 0.05 255);
+    --color-info: oklch(68% 0.16 255);
+    --color-info-light: oklch(24% 0.06 255);
     --color-info-foreground: oklch(92% 0.01 255);
 
-    --shadow-sm: 0 1px 2px 0 oklch(5% 0.01 60 / 0.2);
-    --shadow-md: 0 4px 6px -1px oklch(5% 0.01 60 / 0.3), 0 2px 4px -2px oklch(5% 0.01 60 / 0.3);
-    --shadow-lg: 0 10px 15px -3px oklch(5% 0.01 60 / 0.4), 0 4px 6px -4px oklch(5% 0.01 60 / 0.4);
-    --shadow-xl: 0 20px 25px -5px oklch(5% 0.01 60 / 0.5), 0 8px 10px -6px oklch(5% 0.01 60 / 0.5);
+    --shadow-sm: 0 1px 2px 0 oklch(5% 0.02 270 / 0.25);
+    --shadow-md: 0 4px 6px -1px oklch(5% 0.02 270 / 0.35), 0 2px 4px -2px oklch(5% 0.02 270 / 0.35);
+    --shadow-lg: 0 10px 15px -3px oklch(5% 0.02 270 / 0.4), 0 4px 6px -4px oklch(5% 0.02 270 / 0.4);
+    --shadow-xl: 0 20px 25px -5px oklch(5% 0.02 270 / 0.5), 0 8px 10px -6px oklch(5% 0.02 270 / 0.5);
   }
 }
 
 /* Manual dark mode class */
 .dark {
-  --color-primary: oklch(65% 0.12 35);
-  --color-primary-light: oklch(75% 0.1 35);
-  --color-primary-dark: oklch(55% 0.14 35);
-  --color-primary-foreground: oklch(15% 0.02 35);
+  --color-primary: oklch(65% 0.18 270);
+  --color-primary-light: oklch(72% 0.14 270);
+  --color-primary-dark: oklch(55% 0.2 270);
+  --color-primary-foreground: oklch(12% 0.03 270);
 
-  --color-accent: oklch(70% 0.15 80);
-  --color-accent-light: oklch(80% 0.12 80);
-  --color-accent-dark: oklch(60% 0.18 80);
-  --color-accent-foreground: oklch(20% 0.05 80);
+  --color-accent: oklch(72% 0.18 290);
+  --color-accent-light: oklch(80% 0.14 290);
+  --color-accent-dark: oklch(60% 0.22 290);
+  --color-accent-foreground: oklch(12% 0.03 290);
 
-  --color-text: oklch(92% 0.02 60);
-  --color-text-muted: oklch(70% 0.03 60);
-  --color-text-subtle: oklch(55% 0.02 60);
+  --color-text: oklch(92% 0.015 270);
+  --color-text-muted: oklch(68% 0.02 270);
+  --color-text-subtle: oklch(54% 0.015 270);
 
-  --color-surface: oklch(18% 0.01 80);
-  --color-surface-alt: oklch(22% 0.02 80);
-  --color-surface-elevated: oklch(25% 0.02 80);
+  --color-surface: oklch(16% 0.015 270);
+  --color-surface-alt: oklch(21% 0.018 270);
+  --color-surface-elevated: oklch(24% 0.018 270);
 
-  --color-border: oklch(30% 0.02 80);
-  --color-border-strong: oklch(40% 0.03 80);
+  --color-border: oklch(30% 0.02 270);
+  --color-border-strong: oklch(40% 0.025 270);
 
-  --color-success: oklch(70% 0.18 145);
-  --color-success-light: oklch(25% 0.05 145);
-  --color-success-foreground: oklch(92% 0.01 145);
+  --color-success: oklch(68% 0.18 155);
+  --color-success-light: oklch(24% 0.06 155);
+  --color-success-foreground: oklch(92% 0.01 155);
 
-  --color-warning: oklch(80% 0.18 85);
-  --color-warning-light: oklch(25% 0.05 85);
-  --color-warning-foreground: oklch(20% 0.05 85);
+  --color-warning: oklch(75% 0.16 75);
+  --color-warning-light: oklch(24% 0.05 75);
+  --color-warning-foreground: oklch(16% 0.04 75);
 
-  --color-danger: oklch(65% 0.2 25);
-  --color-danger-light: oklch(22% 0.05 25);
+  --color-danger: oklch(62% 0.22 25);
+  --color-danger-light: oklch(22% 0.06 25);
   --color-danger-foreground: oklch(95% 0.01 25);
 
-  --color-info: oklch(70% 0.15 255);
-  --color-info-light: oklch(25% 0.05 255);
+  --color-info: oklch(68% 0.16 255);
+  --color-info-light: oklch(24% 0.06 255);
   --color-info-foreground: oklch(92% 0.01 255);
 
-  --shadow-sm: 0 1px 2px 0 oklch(5% 0.01 60 / 0.2);
-  --shadow-md: 0 4px 6px -1px oklch(5% 0.01 60 / 0.3), 0 2px 4px -2px oklch(5% 0.01 60 / 0.3);
-  --shadow-lg: 0 10px 15px -3px oklch(5% 0.01 60 / 0.4), 0 4px 6px -4px oklch(5% 0.01 60 / 0.4);
-  --shadow-xl: 0 20px 25px -5px oklch(5% 0.01 60 / 0.5), 0 8px 10px -6px oklch(5% 0.01 60 / 0.5);
+  --shadow-sm: 0 1px 2px 0 oklch(5% 0.02 270 / 0.25);
+  --shadow-md: 0 4px 6px -1px oklch(5% 0.02 270 / 0.35), 0 2px 4px -2px oklch(5% 0.02 270 / 0.35);
+  --shadow-lg: 0 10px 15px -3px oklch(5% 0.02 270 / 0.4), 0 4px 6px -4px oklch(5% 0.02 270 / 0.4);
+  --shadow-xl: 0 20px 25px -5px oklch(5% 0.02 270 / 0.5), 0 8px 10px -6px oklch(5% 0.02 270 / 0.5);
 }
 
 *,
@@ -167,6 +167,7 @@ html {
   /* Fluid typography base */
   font-size: clamp(9px, 0.5vw + 8px, 11px);
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -178,6 +179,7 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   font-feature-settings: "kern" 1, "liga" 1;
+  overflow-x: hidden;
 }
 
 a {

@@ -1,18 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import ErrorMessage from './ErrorMessage';
 import StateMessage from './StateMessage';
 import type { PermissionName, UserWithPermissions } from '../lib/api/types';
 import {
-  metaLabelClass,
-  mutedSurfaceClass,
-  panelClass,
-  primaryButtonClass,
-  sectionDescriptionClass,
-  sectionHeaderClass,
-  sectionTitleClass,
-  statCardClass,
+  buttonVariants,
+  cardVariants,
+  typographyClasses,
+  cn,
 } from '../lib/ui';
 import { listUsers, updateUserPermissions } from '../lib/api';
 
@@ -77,46 +74,77 @@ export default function Permissions() {
   }
 
   return (
-    <section className="grid gap-6">
+    <motion.section
+      className="grid gap-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+    >
       <ErrorMessage error={error || undefined} />
-      <div className={sectionHeaderClass}>
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
         <div className="space-y-2">
-          <h1 className={sectionTitleClass}>Permissions</h1>
-          <p className={sectionDescriptionClass}>
+          <h1 className={typographyClasses.h1}>Permissions</h1>
+          <p className={cn(typographyClasses.body, typographyClasses.muted)}>
             Review account access and save permission changes for each user individually.
           </p>
         </div>
-        <div className={`${statCardClass} lg:justify-self-end`}>
-          <span className="font-semibold text-[var(--color-text)]">{users.length}</span> managed user{users.length === 1 ? '' : 's'}
-        </div>
+        <motion.div
+          className={cn(cardVariants({ variant: 'default', size: 'sm' }), 'lg:justify-self-end')}
+          whileHover={{ y: -2 }}
+          transition={{ duration: 0.2 }}
+        >
+          <p className={cn(typographyClasses.small, typographyClasses.muted, 'm-0 text-xs font-semibold uppercase tracking-wider')}>
+            Managed users
+          </p>
+          <p className={cn('m-0 mt-1 font-semibold', typographyClasses.body)}>
+            {users.length} user{users.length === 1 ? '' : 's'}
+          </p>
+        </motion.div>
       </div>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        <div className={mutedSurfaceClass}>
-          <p className={metaLabelClass}>Who can edit items</p>
-          <p className="mt-2 mb-0 text-[1.45rem] text-[var(--color-text)]">Item create, update, and delete permissions control catalog access.</p>
-        </div>
-        <div className={mutedSurfaceClass}>
-          <p className={metaLabelClass}>Who can manage access</p>
-          <p className="mt-2 mb-0 text-[1.45rem] text-[var(--color-text)]">Permission update and admin access allow permission changes.</p>
-        </div>
-        <div className={mutedSurfaceClass}>
-          <p className={metaLabelClass}>Save behavior</p>
-          <p className="mt-2 mb-0 text-[1.45rem] text-[var(--color-text)]">Changes stay local until you press Save for that row.</p>
-        </div>
+        {[
+          {
+            title: 'Who can edit items',
+            description: 'Item create, update, and delete permissions control catalog access.',
+          },
+          {
+            title: 'Who can manage access',
+            description: 'Permission update and admin access allow permission changes.',
+          },
+          {
+            title: 'Save behavior',
+            description: 'Changes stay local until you press Save for that row.',
+          },
+        ].map((card, i) => (
+          <motion.div
+            key={card.title}
+            className={cardVariants({ variant: 'default', size: 'sm' })}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: i * 0.05 }}
+          >
+            <p className={cn(typographyClasses.small, typographyClasses.muted, 'm-0 text-xs font-semibold uppercase tracking-wider')}>
+              {card.title}
+            </p>
+            <p className={cn('m-0 mt-2', typographyClasses.small)}>
+              {card.description}
+            </p>
+          </motion.div>
+        ))}
       </div>
-      <div className={`${panelClass} overflow-hidden p-0`}>
-        <div className="overflow-x-auto rounded-[10px]">
+      <div className={cn(cardVariants({ variant: 'default' }), 'overflow-hidden p-0')}>
+        <div className="overflow-x-auto">
           <table className="min-w-[760px] w-full border-spacing-0">
             <thead>
-              <tr className="bg-[var(--color-surface-alt)]">
-                <th className="border-r border-b border-[var(--color-border)] px-4 py-3 text-left text-[1.15rem] font-semibold text-[var(--color-muted)]">Name</th>
-                <th className="border-r border-b border-[var(--color-border)] px-4 py-3 text-left text-[1.15rem] font-semibold text-[var(--color-muted)]">Email</th>
+              <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface-alt)]">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Name</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Email</th>
                 {POSSIBLE_PERMISSIONS.map((permission) => (
-                  <th className="border-r border-b border-[var(--color-border)] px-4 py-3 text-left text-[1.15rem] font-semibold text-[var(--color-muted)]" key={permission}>
+                  <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]" key={permission}>
                     {permission}
                   </th>
                 ))}
-                <th className="border-b border-[var(--color-border)] px-4 py-3 text-left text-[1.15rem] font-semibold text-[var(--color-muted)]">Update</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Update</th>
               </tr>
             </thead>
             <tbody>
@@ -127,7 +155,7 @@ export default function Permissions() {
           </table>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
 
@@ -178,18 +206,18 @@ function UserPermissions({ onSaved, user }: { onSaved: (user: UserWithPermission
           </td>
         </tr>
       ) : null}
-      <tr className="align-top hover:bg-[var(--color-surface-alt)]/60">
-        <td className="border-r border-b border-[var(--color-border)] px-4 py-3 text-[1.35rem] font-semibold text-[var(--color-text)]">
+      <tr className="align-top border-b border-[var(--color-border)] transition-colors hover:bg-[var(--color-surface-alt)]/60">
+        <td className="px-4 py-3 font-semibold text-[var(--color-text)]">
           {user.name}
         </td>
-        <td className="border-r border-b border-[var(--color-border)] px-4 py-3 text-[1.35rem] text-[var(--color-muted)]">
+        <td className="px-4 py-3 text-[var(--color-text-muted)]">
           {user.email}
         </td>
         {POSSIBLE_PERMISSIONS.map((permission) => (
-          <td className="border-r border-b border-[var(--color-border)] px-4 py-3" key={`${user.id}-${permission}`}>
-            <label className="flex justify-center" htmlFor={`${user.id}-permission-${permission}`}>
+          <td className="px-4 py-3 text-center" key={`${user.id}-${permission}`}>
+            <label className="flex cursor-pointer justify-center" htmlFor={`${user.id}-permission-${permission}`}>
               <input
-                className="h-4 w-4 rounded border-[var(--color-border)] text-[var(--color-text)] accent-[var(--color-text)]"
+                className="h-4 w-4 rounded border-[var(--color-border)] text-[var(--color-accent)] accent-[var(--color-accent)] transition-colors"
                 type="checkbox"
                 id={`${user.id}-permission-${permission}`}
                 checked={permissions.includes(permission)}
@@ -199,14 +227,52 @@ function UserPermissions({ onSaved, user }: { onSaved: (user: UserWithPermission
             </label>
           </td>
         ))}
-        <td className="border-b border-[var(--color-border)] px-4 py-3">
-          <div className="grid gap-2">
-            <button className={primaryButtonClass} type="button" disabled={loading || !isDirty} onClick={savePermissions}>
+        <td className="px-4 py-3">
+          <div className="flex flex-col gap-2">
+            <motion.button
+              className={cn(buttonVariants({ variant: isDirty ? 'primary' : 'secondary', size: 'sm' }))}
+              type="button"
+              disabled={loading || !isDirty}
+              onClick={savePermissions}
+              whileHover={{ scale: isDirty ? 1.02 : 1 }}
+              whileTap={{ scale: isDirty ? 0.98 : 1 }}
+            >
               {loading ? 'Saving...' : isDirty ? 'Save' : 'Saved'}
-            </button>
-            <span className="text-[1.15rem] text-[var(--color-muted)]">
-              {loading ? 'Updating access' : saveState === 'saved' ? 'Saved' : isDirty ? 'Unsaved changes' : 'No changes'}
-            </span>
+            </motion.button>
+            <AnimatePresence mode="wait">
+              {loading ? (
+                <motion.span
+                  className={cn(typographyClasses.small, typographyClasses.muted)}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  Updating access
+                </motion.span>
+              ) : saveState === 'saved' ? (
+                <motion.span
+                  className={cn(typographyClasses.small, 'text-[var(--color-success)]')}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  Saved
+                </motion.span>
+              ) : isDirty ? (
+                <motion.span
+                  className={cn(typographyClasses.small, 'text-[var(--color-warning)]')}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  Unsaved changes
+                </motion.span>
+              ) : (
+                <span className={cn(typographyClasses.small, typographyClasses.muted)}>
+                  No changes
+                </span>
+              )}
+            </AnimatePresence>
           </div>
         </td>
       </tr>

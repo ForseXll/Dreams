@@ -3,18 +3,15 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import ErrorMessage from './ErrorMessage';
 import StateMessage from './StateMessage';
 import TimeText from './TimeText';
 import type { Order, OrderItem } from '../lib/api/types';
 import {
-  metaLabelClass,
-  mutedSurfaceClass,
-  panelClass,
-  sectionDescriptionClass,
-  sectionHeaderClass,
-  sectionTitleClass,
-  statCardClass,
+  cardVariants,
+  typographyClasses,
+  cn,
 } from '../lib/ui';
 import formatMoney from '../lib/formatMoney';
 import { listOrders } from '../lib/api';
@@ -79,49 +76,72 @@ export default function OrderList() {
   }
 
   return (
-    <section className="grid gap-6">
-      <div className={sectionHeaderClass}>
+    <motion.section
+      className="grid gap-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
         <div className="space-y-2">
-          <h1 className={sectionTitleClass}>Orders</h1>
-          <p className={sectionDescriptionClass}>
+          <h1 className={typographyClasses.h1}>Orders</h1>
+          <p className={cn(typographyClasses.body, typographyClasses.muted)}>
             Review completed purchases, recent activity, and the items attached to each order.
           </p>
         </div>
-        <div className={`${statCardClass} lg:justify-self-end`}>
-          <span className="font-semibold text-[var(--color-text)]">{orders.length}</span> total order{orders.length === 1 ? '' : 's'}
-        </div>
+        <motion.div
+          className={cn(cardVariants({ variant: 'default', size: 'sm' }), 'lg:justify-self-end')}
+          whileHover={{ y: -2 }}
+          transition={{ duration: 0.2 }}
+        >
+          <p className={cn(typographyClasses.small, typographyClasses.muted, 'm-0 text-xs font-semibold uppercase tracking-wider')}>
+            Total orders
+          </p>
+          <p className={cn('m-0 mt-1 font-semibold', typographyClasses.body)}>
+            {orders.length} order{orders.length === 1 ? '' : 's'}
+          </p>
+        </motion.div>
       </div>
 
       <ul className="grid list-none gap-6 p-0">
-        {orders.map((order) => (
-          <li className={`${panelClass} list-none p-5 sm:p-6`} key={order.id}>
+        {orders.map((order, orderIndex) => (
+          <motion.li
+            className={cn(cardVariants({ variant: 'interactive' }), 'list-none p-5 sm:p-6')}
+            key={order.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: orderIndex * 0.05 }}
+          >
             <Link href={{ pathname: '/order', query: { id: order.id } }}>
               <div className="grid gap-5">
                 <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                  <div className={mutedSurfaceClass}>
-                    <p className={metaLabelClass}>Items</p>
-                    <p className="mt-2 mb-0 text-[1.7rem] font-semibold text-[var(--color-text)]">
-                      {order.orderItems.reduce((total: number, item: OrderItem) => total + item.quantity, 0)}
-                    </p>
-                  </div>
-                  <div className={mutedSurfaceClass}>
-                    <p className={metaLabelClass}>Products</p>
-                    <p className="mt-2 mb-0 text-[1.7rem] font-semibold text-[var(--color-text)]">
-                      {order.orderItems.length}
-                    </p>
-                  </div>
-                  <div className={mutedSurfaceClass}>
-                    <p className={metaLabelClass}>Placed</p>
-                    <p className="mt-2 mb-0 text-[1.5rem] font-semibold text-[var(--color-text)]">
-                      <TimeText mode="relative" value={order.createdAt} />
-                    </p>
-                  </div>
-                  <div className={mutedSurfaceClass}>
-                    <p className={metaLabelClass}>Total</p>
-                    <p className="mt-2 mb-0 text-[1.7rem] font-semibold text-[var(--color-text)]">
-                      {formatMoney(order.total)}
-                    </p>
-                  </div>
+                  {[
+                    {
+                      label: 'Items',
+                      value: String(order.orderItems.reduce((total: number, item: OrderItem) => total + item.quantity, 0)),
+                    },
+                    {
+                      label: 'Products',
+                      value: String(order.orderItems.length),
+                    },
+                    {
+                      label: 'Placed',
+                      value: <TimeText mode="relative" value={order.createdAt} />,
+                    },
+                    {
+                      label: 'Total',
+                      value: formatMoney(order.total),
+                    },
+                  ].map((stat) => (
+                    <div key={stat.label} className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-2">
+                      <p className={cn(typographyClasses.small, typographyClasses.muted, 'm-0 text-xs font-semibold uppercase tracking-wider')}>
+                        {stat.label}
+                      </p>
+                      <p className={cn('m-0 mt-1 font-semibold', typographyClasses.body)}>
+                        {stat.value}
+                      </p>
+                    </div>
+                  ))}
                 </div>
                 <div className="mt-1 grid grid-cols-2 gap-3 md:grid-cols-[repeat(auto-fit,minmax(0,1fr))]">
                   {order.orderItems.map((item: OrderItem) => (
@@ -135,8 +155,12 @@ export default function OrderList() {
                           sizes="(max-width: 768px) 50vw, 200px"
                         />
                       ) : (
-                        <div className="flex h-full items-center justify-center bg-[var(--color-surface-alt)] text-[1.3rem] text-[var(--color-muted)]">
-                          No image
+                        <div className="flex h-full items-center justify-center bg-[var(--color-surface-alt)] text-[var(--color-text-muted)]">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                            <circle cx="9" cy="9" r="2" />
+                            <path d="m21 15-3.086-3.086-2.654.442-4.572-4.572L3.414 15" />
+                          </svg>
                         </div>
                       )}
                     </div>
@@ -144,9 +168,9 @@ export default function OrderList() {
                 </div>
               </div>
             </Link>
-          </li>
+          </motion.li>
         ))}
       </ul>
-    </section>
+    </motion.section>
   );
 }

@@ -14,8 +14,9 @@
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio",
     "db:migrate": "drizzle-kit migrate",
-    "db:seed": "node --env-file .env --import tsx src/scripts/seed-permissions.ts",
-    "cloudinary:list-urls": "node --env-file .env --import tsx src/scripts/list-cloudinary-urls.ts",
+    "db:seed": "node --env-file .env  src/scripts/seed-permissions.ts",
+    "cloudinary:list-urls": "node --env-file .env  src/scripts/list-cloudinary-urls.ts",
+    "db:seed:items-from-cloudinary": "node --env-file .env  src/scripts/seed-items-from-cloudinary.ts",
     "openapi:export": "tsx src/scripts/export-openapi.ts"
   },
   "dependencies": {
